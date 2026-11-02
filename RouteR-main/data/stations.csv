@@ -1,0 +1,139 @@
+ocm_id,name,lat,lon,power_kw,connector_type,current_type,operator,city,state,pricing_inr_kwh,status
+920034,Statiq Superfast - Ahmednagar Nagar Bypass Hub,19.0948,74.748,120,CCS2,DC Fast,Statiq Superfast,Ahmednagar,Maharashtra,18.5,Operational
+309235,Tata Power EZ Charge - Indira Nagar,19.05182,74.72343,60,CCS2,DC Fast,Tata Power EZ Charge,Ahmednagar,Maharashtra,18.5,Operational
+920040,Tata Power EZ Charge - Alibag Bypass Plaza,18.6414,72.8722,60,CCS2,DC Fast,Tata Power EZ Charge,Alibag,Maharashtra,18.5,Operational
+308057,Tata Power EZ Charge - Hotel Madhuban EV Charging Station,16.00266,74.04358,60,CCS2,DC Fast,Tata Power EZ Charge,Amboli,Maharashtra,18.5,Operational
+308042,Tata Power EZ Charge - Hotel Madhuban EV Charging Station,16.00262,74.04349,60,CCS2,DC Fast,Tata Power EZ Charge,Amboli,Maharashtra,18.5,Operational
+484942,Tata Power EZ Charge - Hotel Sai Palace,17.91698,73.97485,30,Type2,AC,Tata Power EZ Charge,Anavadi,Maharashtra,18.5,Operational
+484939,Tata Power EZ Charge - Anewadi Toll Plaza,17.81036,73.97104,30,Type2,AC,Tata Power EZ Charge,Anewadi,Maharashtra,18.5,Operational
+484940,Tata Power EZ Charge - Hotel Tatyancha Wada,17.86786,73.95718,30,Type2,AC,Tata Power EZ Charge,Asale,Maharashtra,18.5,Operational
+504729,Tata Power EZ Charge - Uplug Ev Charging Station & Network,16.94591,74.4054,60,CCS2,DC Fast,Tata Power EZ Charge,Ashta,Maharashtra,18.5,Operational
+484941,Tata Power EZ Charge - Hotel Ruchi Park,17.89954,73.97251,30,Type2,AC,Tata Power EZ Charge,Badewadi,Maharashtra,18.5,Operational
+502291,Tata Power EZ Charge - MobiLane 45ICON,18.55384,73.79676,7,Type2,AC,Tata Power EZ Charge,Baner,Maharashtra,18.5,Operational
+309436,Tata Power EZ Charge - Vintage Retreat Resort,17.79618,77.42225,30,Type2,AC,Tata Power EZ Charge,Chatnalli,Maharashtra,18.5,Operational
+920029,Tata Power EZ Charge - Chhatrapati Sambhaji Nagar Waluj,19.832,75.245,120,CCS2,DC Fast,Tata Power EZ Charge,Chhatrapati Sambhaji Nagar,Maharashtra,18.5,Operational
+502272,Tata Power EZ Charge - MobiLane Treat Resort - Silvassa,20.24542,73.0595,30,Type2,AC,Tata Power EZ Charge,Dadra and nagar,Maharashtra,18.5,Operational
+920035,Tata Power EZ Charge - Dhule Bypass Interchange Hub,20.9042,74.7749,120,CCS2,DC Fast,Tata Power EZ Charge,Dhule,Maharashtra,18.5,Operational
+312374,Tata Power EZ Charge - Hotel Topline,20.83697,74.75561,60,CCS2,DC Fast,Tata Power EZ Charge,Dhule,Maharashtra,18.5,Operational
+502271,Tata Power EZ Charge - MobiLane Treat Beach Resort - Gholvad,20.0879,72.73376,50,CCS2,DC Fast,Tata Power EZ Charge,Gholvad,Maharashtra,18.5,Operational
+484936,Tata Power EZ Charge - Hotel Mahendra,17.2981,74.16724,30,Type2,AC,Tata Power EZ Charge,Gote,Maharashtra,18.5,Operational
+311983,Tata Power EZ Charge - Vithal Kamats,20.57444,78.8823,30,Type2,AC,Tata Power EZ Charge,Hinganghat,Maharashtra,18.5,Operational
+309438,Tata Power EZ Charge - Hotel BHP-6,17.7726,77.11402,60,CCS2,DC Fast,Tata Power EZ Charge,Humnabad,Maharashtra,18.5,Operational
+920027,Tata Power EZ Charge - Igatpuri Hill Pass Station,19.702,73.56,120,CCS2,DC Fast,Tata Power EZ Charge,Igatpuri,Maharashtra,18.5,Operational
+920036,Zeon Charging - Jalgaon Industrial Plaza,21.0077,75.5626,120,CCS2,DC Fast,Zeon Charging,Jalgaon,Maharashtra,18.5,Operational
+920031,ChargeZone - Samruddhi Mahamarg Jalna Waypoint Hub,19.841,75.882,150,CCS2,DC Fast,ChargeZone,Jalna,Maharashtra,18.5,Operational
+920009,Jio-bp pulse - Jaysingpur Bypass Hub,16.784,74.56,60,CCS2,DC Fast,Jio-bp pulse,Jaysingpur,Maharashtra,18.5,Operational
+309440,Tata Power EZ Charge - Aashirwaad Mangal Karyalay,17.32725,76.8678,60,CCS2,DC Fast,Tata Power EZ Charge,Kalaburagi,Maharashtra,18.5,Operational
+309441,Tata Power EZ Charge - Sri Nisty Pvt,17.27461,76.87407,30,Type2,AC,Tata Power EZ Charge,Kalaburgi,Maharashtra,18.5,Operational
+484931,Tata Power EZ Charge - HR Resort,17.20689,74.15672,30,Type2,AC,Tata Power EZ Charge,Kale,Maharashtra,18.5,Operational
+201254,Tata Power EZ Charge - Cinemax,19.24365,73.13476,3,Type2,AC,Tata Power EZ Charge,Kalyan,Maharashtra,18.5,Operational
+481507,Tata Power EZ Charge - Hotel Purn Kolhapuri,16.62191,74.296,30,Type2,AC,Tata Power EZ Charge,Kaneriwadi,Maharashtra,18.5,Operational
+920013,ChargeZone - Karad Highway Fast Stop,17.288,74.184,120,CCS2,DC Fast,ChargeZone,Karad,Maharashtra,18.5,Operational
+484930,Tata Power EZ Charge - One Bite Restaurant & Captains Paradise Lodge,17.10677,74.20528,30,Type2,AC,Tata Power EZ Charge,Kedargaon,Maharashtra,18.5,Operational
+485109,Jio-BP Mobility,18.28558,73.87505,30,Type2,AC,Jio-bp pulse,Kelawade,Maharashtra,18.5,Operational
+485108,Tata Power EZ Charge - Grand Food Plaza,18.28154,73.87636,30,Type2,AC,Tata Power EZ Charge,Kelwade Bhor,Maharashtra,18.5,Operational
+920020,Jio-bp pulse - Khalapur Food Mall Superhub,18.815,73.285,240,CCS2,DC Fast,Jio-bp pulse,Khalapur,Maharashtra,18.5,Operational
+484947,Tata Power EZ Charge - The Farmer's Kitchen,18.11791,73.98729,30,Type2,AC,Tata Power EZ Charge,Khandala,Maharashtra,18.5,Operational
+484928,Tata Power EZ Charge - Hotel 7/12 Food Mall,16.86187,74.29702,30,Type2,AC,Tata Power EZ Charge,Kini,Maharashtra,18.5,Operational
+484926,Jio-BP Mobility Station,16.82115,74.28579,30,Type2,AC,Jio-bp pulse,Kolhapur,Maharashtra,18.5,Operational
+920012,Jio-bp pulse - Kolhapur Kawala Naka Plaza,16.702,74.243,120,CCS2,DC Fast,Jio-bp pulse,Kolhapur,Maharashtra,18.5,Operational
+481509,Tata Power EZ Charge - CWC Kolhapur - I,16.70252,74.26649,30,Type2,AC,Tata Power EZ Charge,Kolhapur,Maharashtra,18.5,Operational
+484925,Tata Power EZ Charge - Hotel Vanashree Garden,16.74506,74.3251,30,Type2,AC,Tata Power EZ Charge,Kolhapur,Maharashtra,18.5,Operational
+481511,Tata Power EZ Charge - Kolhapur Railway Station,16.70296,74.2371,30,Type2,AC,Tata Power EZ Charge,Kolhapur,Maharashtra,18.5,Operational
+920011,Tata Power EZ Charge - Kolhapur Shiroli Toll Plaza,16.745,74.312,150,CCS2,DC Fast,Tata Power EZ Charge,Kolhapur,Maharashtra,18.5,Operational
+484924,Tata Power EZ Charge - Konduskar Kia,16.75366,74.27895,45,CCS2,DC Fast,Tata Power EZ Charge,Kolhapur,Maharashtra,18.5,Operational
+481510,Tata Power EZ Charge - MAI Hyundai Kolhapur,16.70239,74.2503,30,Type2,AC,Tata Power EZ Charge,Kolhapur,Maharashtra,18.5,Operational
+481512,Tata Power EZ Charge - Reliance Mall,16.69888,74.23114,30,Type2,AC,Tata Power EZ Charge,Kolhapur,Maharashtra,18.5,Operational
+307911,Tata Power EZ Charge - Vijaya Power Charging Station 60 Kw + 30 Kw,16.70337,74.25046,60,CCS2,DC Fast,Tata Power EZ Charge,Kolhapur,Maharashtra,18.5,Operational
+920037,ChargeZone - Latur Ring Road Station,18.4088,76.5604,120,CCS2,DC Fast,ChargeZone,Latur,Maharashtra,18.5,Operational
+472439,Tata Power EZ Charge - Midway Treat Khushi Inn Sakadehi Betul Hotel,21.99779,77.86538,120,CCS2,DC Fast,Tata Power EZ Charge,Madhya Pradesh,Maharashtra,18.5,Operational
+298738,Tata Power EZ Charge - Balasaheb Thackeray Flyover,19.13995,72.85197,50,CCS2,DC Fast,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+460962,Tata Power EZ Charge - D N R Fuel Point,20.63427,78.92732,120,CCS2,DC Fast,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+488067,Tata Power EZ Charge - G R Charging,21.34025,74.93769,120,CCS2,DC Fast,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+512569,Tata Power EZ Charge - Kulupwadi,19.22983,72.86437,3,Type2,AC,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+190068,Tata Power EZ Charge - Mira Road,19.14001,72.85344,50,CCS2,DC Fast,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+503818,Tata Power EZ Charge - NH-7 Hotel,20.63458,78.9276,240,CCS2,DC Fast,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+510426,Tata Power EZ Charge - SEL Dev Maharashtra,19.10532,72.87589,7,Type2,AC,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+488062,Tata Power EZ Charge - Saguna Family Restaurant,17.87701,75.97602,60,CCS2,DC Fast,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+484948,Tata Power EZ Charge - Sant Sawatamali,18.1275,73.98388,30,Type2,AC,Tata Power EZ Charge,Maharashtra,Maharashtra,18.5,Operational
+484935,Tata Power EZ Charge - Hotel Sangam,17.27377,74.18033,30,Type2,AC,Tata Power EZ Charge,Malkapur,Maharashtra,18.5,Operational
+309437,Tata Power EZ Charge - Hotel 24,17.7392,77.3347,90,CCS2,DC Fast,Tata Power EZ Charge,Mannaekhelli,Maharashtra,18.5,Operational
+469487,Tata Power EZ Charge - Hyundai EV Chg Stn Manor,19.67794,72.90805,60,CCS2,DC Fast,Tata Power EZ Charge,Manor,Maharashtra,18.5,Operational
+920002,Jio-bp pulse - Miraj Railway Junction Super Plaza,16.828,74.645,120,CCS2,DC Fast,Jio-bp pulse,Miraj,Maharashtra,18.5,Operational
+462380,Tata Power EZ Charge - Cube Stop NH-44,21.91424,79.52637,120,CCS2,DC Fast,Tata Power EZ Charge,Mohgaon,Maharashtra,18.5,Operational
+307102,Tata Power EZ Charge - Andheri West,19.1166,72.82927,120,CCS2,DC Fast,Tata Power EZ Charge,Mumbai,Maharashtra,18.5,Operational
+920022,Tata Power EZ Charge - BKC Diamond Bourse Supercharger,19.067,72.868,150,CCS2,DC Fast,Tata Power EZ Charge,Mumbai,Maharashtra,18.5,Operational
+502290,Tata Power EZ Charge - MobiLane Equinox Business Park,19.07157,72.87721,50,CCS2,DC Fast,Tata Power EZ Charge,Mumbai,Maharashtra,18.5,Operational
+92772,Tata Power Receiving Station,19.0958,72.92601,50,CCS2,DC Fast,Tata Power EZ Charge,Mumbai,Maharashtra,18.5,Operational
+474191,Tata Power EZ Charge - Viraj Junction EFill EVCS,16.53667,74.31996,60,CCS2,DC Fast,Tata Power EZ Charge,NH48,Maharashtra,18.5,Operational
+512863,Jio-BP Pulse by NMC,21.16484,79.08103,60,CCS2,DC Fast,Jio-bp pulse,Nagpur,Maharashtra,18.5,Operational
+92771,Tata Power EZ Charge - Ola Charging Point,21.08857,79.05439,50,CCS2,DC Fast,Tata Power EZ Charge,Nagpur,Maharashtra,18.5,Operational
+920038,Jio-bp pulse - Nanded Expressway Connect Hub,19.1383,77.321,120,CCS2,DC Fast,Jio-bp pulse,Nanded,Maharashtra,18.5,Operational
+484933,Tata Power EZ Charge - Sai Restaurant and Cafe,17.22569,74.18004,30,Type2,AC,Tata Power EZ Charge,Nandlapur,Maharashtra,18.5,Operational
+475401,Tata Power EZ Charge - Sai Restaurant & Cafe,17.22435,74.18016,60,CCS2,DC Fast,Tata Power EZ Charge,Narayanwadi,Maharashtra,18.5,Operational
+920025,ChargeZone - Ambad MIDC Fast Charger,19.945,73.731,150,CCS2,DC Fast,ChargeZone,Nashik,Maharashtra,18.5,Operational
+920023,Jio-bp pulse - Mumbai-Agra Highway Hub,19.982,73.765,120,CCS2,DC Fast,Jio-bp pulse,Nashik,Maharashtra,18.5,Operational
+502284,Tata Power EZ Charge - MobiLane Treat Hotel - Nashik,19.98038,73.77865,120,CCS2,DC Fast,Tata Power EZ Charge,Nashik,Maharashtra,18.5,Operational
+920024,Tata Power EZ Charge - Nashik City Centre Mall,20.0035,73.7632,60,CCS2,DC Fast,Tata Power EZ Charge,Nashik,Maharashtra,18.5,Operational
+920021,Zeon Charging - Vashi Sanpada Highway Stop,19.062,73.011,120,CCS2,DC Fast,Zeon Charging,Navi Mumbai,Maharashtra,18.5,Operational
+481506,Tata Power EZ Charge - Hotel Udupi Grand,16.39545,74.37336,30,Type2,AC,Tata Power EZ Charge,Nipani,Maharashtra,18.5,Operational
+484927,Tata Power EZ Charge - Nakshatra Hotel,16.82185,74.28635,30,Type2,AC,Tata Power EZ Charge,Peth Vadgoan,Maharashtra,18.5,Operational
+480930,Tata Power EZ Charge - E Fill Electric Charging Station,18.65176,73.73355,30,Type2,AC,Tata Power EZ Charge,Pimpri-Chinchwad,Maharashtra,18.5,Operational
+920016,ChargeZone - Khed Shivapur Expressway Hub,18.354,73.864,150,CCS2,DC Fast,ChargeZone,Pune,Maharashtra,18.5,Operational
+920017,Statiq Superfast - Pune Swargate EV Plaza,18.501,73.858,120,CCS2,DC Fast,Statiq Superfast,Pune,Maharashtra,18.5,Operational
+480933,Tata Motors Tathawade,18.62349,73.74548,25,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481495,Tata Power EZ Charge - Aditya School,18.56124,73.78121,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481494,Tata Power EZ Charge - Amar Business Zone,18.56414,73.77646,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481497,Tata Power EZ Charge - B4S Baner,18.55342,73.77066,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481493,Tata Power EZ Charge - Balewadi Charge Park,18.57894,73.7625,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+480934,Tata Power EZ Charge - Burger King - Tathawade,18.61653,73.74774,25,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481496,Tata Power EZ Charge - Crystal Kia - Baner,18.55735,73.77054,75,CCS2,DC Fast,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+485111,Tata Power EZ Charge - Datsons Electronics Pvt. Ltd,18.42335,73.75487,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481488,Tata Power EZ Charge - Garve Hyundai,18.59992,73.75372,60,CCS2,DC Fast,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481492,Tata Power EZ Charge - Gaurav Icon Tower,18.5963,73.756,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481489,Tata Power EZ Charge - Hotel Sayaji Wakad,18.59909,73.7519,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+480931,Tata Power EZ Charge - Life Republic - Hingewadi,18.62469,73.71614,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481491,Tata Power EZ Charge - MG Motor B.U. Bhandari Showroom,18.59901,73.75416,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+502293,Tata Power EZ Charge - MobiLane Bluegrass Business Park,18.55024,73.89425,50,CCS2,DC Fast,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+485112,Tata Power EZ Charge - Nanded City,18.45952,73.7856,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+479727,Tata Power EZ Charge - Nikol EV Charging station,18.71718,74.18292,80,CCS2,DC Fast,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+485113,Tata Power EZ Charge - Panchjanya Automobiles,18.4827,73.80274,60,CCS2,DC Fast,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+920018,Tata Power EZ Charge - Pune Wakad Phoenix Mall Hub,18.598,73.763,120,CCS2,DC Fast,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+480932,Tata Power EZ Charge - Sai Darbar Hotel,18.6239,73.74564,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+461277,Tata Power EZ Charge - Shashtri Nagar,18.50393,73.80373,1,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+485110,Tata Power EZ Charge - Shell Petrol Pump,18.31054,73.86761,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+481498,Tata Power EZ Charge - Shell Recharge Sus Road,18.55167,73.76102,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+480935,Tata Power EZ Charge - Shell Tathawade,18.61359,73.74883,30,Type2,AC,Tata Power EZ Charge,Pune,Maharashtra,18.5,Operational
+920039,Relux Electric - Ratnagiri Coastal Fast Charger,16.9902,73.312,60,CCS2,DC Fast,Relux Electric,Ratnagiri,Maharashtra,18.5,Operational
+312373,Tata Power EZ Charge - Hotel Mayur Express,19.52011,74.20274,30,Type2,AC,Tata Power EZ Charge,Sangamner,Maharashtra,18.5,Operational
+920003,ChargeZone - Kupwad MIDC Heavy Charger Hub,16.871,74.628,150,CCS2,DC Fast,ChargeZone,Sangli,Maharashtra,18.5,Operational
+484929,Jio-BP Mobility Station,16.96075,74.27239,30,Type2,AC,Jio-bp pulse,Sangli,Maharashtra,18.5,Operational
+920005,Statiq Superfast - Sangli Kolhapur Highway Plaza,16.812,74.52,120,CCS2,DC Fast,Statiq Superfast,Sangli,Maharashtra,18.5,Operational
+920007,Tata Power EZ Charge - Islampur Highway Plaza,17.05,74.26,150,CCS2,DC Fast,Tata Power EZ Charge,Sangli,Maharashtra,18.5,Operational
+311479,Tata Power EZ Charge - Sangli,16.84836,74.60516,50,CCS2,DC Fast,Tata Power EZ Charge,Sangli,Maharashtra,18.5,Operational
+920004,Tata Power EZ Charge - Sangli ST Stand Terminal,16.856,74.578,50,CCS2,DC Fast,Tata Power EZ Charge,Sangli,Maharashtra,18.5,Operational
+481508,Tata Power EZ Charge - Hotel Jurkis Thali Junction Kolhapur,16.6828,74.27191,30,Type2,AC,Tata Power EZ Charge,Sarnobatwadi,Maharashtra,18.5,Operational
+309439,Tata Power EZ Charge - Punjabi Dhami Hotel,17.8286,76.90048,30,Type2,AC,Tata Power EZ Charge,Sastapur,Maharashtra,18.5,Operational
+475680,Tata Power EZ Charge - Amrai Resort,17.63736,74.01218,60,CCS2,DC Fast,Tata Power EZ Charge,Satara,Maharashtra,18.5,Operational
+484937,Tata Power EZ Charge - Hotel Rajmarg,17.60601,74.03156,30,Type2,AC,Tata Power EZ Charge,Satara,Maharashtra,18.5,Operational
+920014,Tata Power EZ Charge - Satara NH48 Supercharger,17.685,74.005,150,CCS2,DC Fast,Tata Power EZ Charge,Satara,Maharashtra,18.5,Operational
+484938,Tata Power EZ Charge - Amrai Resort,17.63772,74.01241,120,CCS2,DC Fast,Tata Power EZ Charge,Shendre,Maharashtra,18.5,Operational
+920030,Jio-bp pulse - Samruddhi Mahamarg Shirdi Interchange Hub,19.895,74.475,150,CCS2,DC Fast,Jio-bp pulse,Shirdi,Maharashtra,18.5,Operational
+314018,Tata Power EZ Charge - Shirdi,19.75759,74.47635,30,Type2,AC,Tata Power EZ Charge,Shirdi,Maharashtra,18.5,Operational
+920010,Relux Electric - Shirol MIDC Station,16.732,74.598,120,CCS2,DC Fast,Relux Electric,Shirol,Maharashtra,18.5,Operational
+484923,Tata Power EZ Charge - Unique Hyundai - Shiroli,16.73132,74.28183,30,Type2,AC,Tata Power EZ Charge,Shiroli,Maharashtra,18.5,Operational
+308058,Tata Power EZ Charge - Vijaya Power Charging Station 60 + 60 kW,18.15733,73.96018,120,CCS2,DC Fast,Tata Power EZ Charge,Shirwal,Maharashtra,18.5,Operational
+308043,Tata Power EZ Charge - Vikaya Power Solutions,18.27205,73.85327,60,CCS2,DC Fast,Tata Power EZ Charge,Shirwal,Maharashtra,18.5,Operational
+920026,Zeon Charging - Sinnar Highway Junction,19.86,73.98,150,CCS2,DC Fast,Zeon Charging,Sinnar,Maharashtra,18.5,Operational
+920028,ChargeZone - Solapur Pune Highway Hub,17.6599,75.9064,120,CCS2,DC Fast,ChargeZone,Solapur,Maharashtra,18.5,Operational
+309435,Tata Power EZ Charge - Ashoka Village Resort,17.15414,75.79103,30,Type2,AC,Tata Power EZ Charge,Sonakanahalli,Maharashtra,18.5,Operational
+308993,Tata Power EZ Charge - Hotel Paradise,16.14641,74.21505,60,CCS2,DC Fast,Tata Power EZ Charge,Sulgaon,Maharashtra,18.5,Operational
+502282,Tata Power EZ Charge - MobiLane E Motion Logitech Pvt Ltd,21.13825,72.88105,50,CCS2,DC Fast,Tata Power EZ Charge,Surat,Maharashtra,18.5,Operational
+484943,Tata Power EZ Charge - Hotel Sai Park Inn,17.9778,73.98815,60,CCS2,DC Fast,Tata Power EZ Charge,Surur,Maharashtra,18.5,Operational
+920008,Magenta ChargeGrid - Tasgaon Junction Stop,17.032,74.601,50,CCS2,DC Fast,Magenta ChargeGrid,Tasgaon,Maharashtra,18.5,Operational
+502276,Tata Power EZ Charge - MobiLane Saya Grand By Treat,19.21916,73.04392,30,Type2,AC,Tata Power EZ Charge,Thane,Maharashtra,18.5,Operational
+307912,Tata Power EZ Charge - Vijata Power Charging Station 60 kW,16.78233,74.27818,60,CCS2,DC Fast,Tata Power EZ Charge,Toap,Maharashtra,18.5,Operational
+920019,Tata Power EZ Charge - Urse Toll Plaza Expressway Hub,18.73,73.66,150,CCS2,DC Fast,Tata Power EZ Charge,Urse,Maharashtra,18.5,Operational
+484946,Tata Power EZ Charge - Hotel Aram Regency,18.00265,73.99486,30,Type2,AC,Tata Power EZ Charge,Wele,Maharashtra,18.5,Operational
+484945,Tata Power EZ Charge - Hotel Ashirwad Inn,17.99083,73.99071,50,CCS2,DC Fast,Tata Power EZ Charge,Wele,Maharashtra,18.5,Operational
+484944,Tata Power EZ Charge - OscarWadi Misal,17.98774,73.98953,150,CCS2,DC Fast,Tata Power EZ Charge,Wele,Maharashtra,18.5,Operational

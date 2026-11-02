@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity AI — EV Route Planner</title>
+  <meta name="description" content="Energy-aware EV route planning with battery modeling, SOC simulation, and automatic charging stop insertion.">
+
+  <!-- Leaflet.js -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+<div class="app-root">
+
+  <!-- ═══ TOPBAR ═══ -->
+  <header class="topbar">
+    <div class="logo-mark">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">Intelligent Route Planning System for EV</span>
+    </div>
+    <div class="system-status">
+      <div class="status-dot" id="status-dot" data-status="loading"></div>
+      <span id="system-status-text">Connecting…</span>
+    </div>
+    <div class="attribution" style="font-family: var(--font-display); font-size: var(--fs-micro); color: var(--text-tertiary);">
+      Charging data: <a href="https://openchargemap.org" target="_blank" rel="noopener" style="color: var(--text-tertiary);">OpenChargeMap</a> (CC BY 4.0)
+    </div>
+  </header>
+
+  <!-- ═══ LEFT PANEL ═══ -->
+  <aside class="left-panel" id="left-panel">
+
+    <!-- Route Input -->
+    <section class="panel-section" aria-label="Route input">
+      <div class="section-header">
+        <span class="section-icon">◉</span>
+        <span class="section-label">Route</span>
+      </div>
+      <div class="route-input-group">
+        <div class="input-row">
+          <div class="input-dot"></div>
+          <input type="text" class="location-input" id="origin-input"
+                 placeholder="Click map — origin" readonly
+                 aria-label="Origin location">
+        </div>
+        <div class="route-connector"><div class="connector-line"></div></div>
+        <div class="input-row">
+          <div class="input-dot input-dot--destination"></div>
+          <input type="text" class="location-input" id="dest-input"
+                 placeholder="Click map — destination" readonly
+                 aria-label="Destination location">
+        </div>
+      </div>
+      <button class="btn-calculate" id="btn-calculate" disabled
+              aria-label="Calculate energy-optimal route">
+        CALCULATE ROUTE
+      </button>
+    </section>
+
+    <!-- EV Profile -->
+    <section class="panel-section" aria-label="EV profile configuration">
+      <div class="section-header">
+        <span class="section-icon">🔋</span>
+        <span class="section-label">EV Profile</span>
+      </div>
+
+      <!-- Battery Gauge -->
+      <div class="battery-gauge" id="battery-gauge" aria-hidden="true">
+        <svg class="gauge-svg" viewBox="0 0 120 120" width="120" height="120">
+          <path class="gauge-track" d="M 20 95 A 50 50 0 1 1 100 95"
+                fill="none" stroke-width="10" stroke-linecap="round"/>
+          <path class="gauge-fill" id="gauge-fill" d="M 20 95 A 50 50 0 1 1 100 95"
+                fill="none" stroke-width="10" stroke-linecap="round"/>
+          <text class="gauge-percent" id="gauge-percent" x="60" y="62" text-anchor="middle">75%</text>
+          <text class="gauge-label" x="60" y="78" text-anchor="middle">SOC</text>
+        </svg>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label" for="f-capacity">Battery Capacity</label>
+        <div style="display: flex; align-items: center; gap: var(--space-2)">
+          <input type="number" class="field-input" id="f-capacity" value="40" min="10" max="200" step="1" style="flex: 1">
+          <span class="field-unit">kWh</span>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <label class="field-label" for="f-soc">State of Charge</label>
+          <span class="field-unit" id="soc-display">75%</span>
+        </div>
+        <div class="slider-container">
+          <div class="slider-fill" id="soc-fill" style="width: 75%"></div>
+          <input type="range" class="field-slider" id="f-soc"
+                 min="5" max="100" value="75" step="1"
+                 aria-valuenow="75" aria-valuemin="5" aria-valuemax="100">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <div style="display: flex; justify-content: space-between; align-items: baseline">
+          <label class="field-label" for="f-soh">State of Health</label>
+          <span class="field-unit" id="soh-display">95%</span>
+        </div>
+        <div class="slider-container">
+          <div class="slider-fill" id="soh-fill" style="width: 95%; background: var(--text-secondary)"></div>
+          <input type="range" class="field-slider" id="f-soh"
+                 min="50" max="100" value="95" step="1"
+                 aria-valuenow="95" aria-valuemin="50" aria-valuemax="100">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label" for="f-charge-rate">Max Charge Rate</label>
+        <div style="display: flex; align-items: center; gap: var(--space-2)">
+          <input type="number" class="field-input" id="f-charge-rate" value="50" min="3" max="350" step="1" style="flex: 1">
+          <span class="field-unit">kW</span>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label">Connectors</label>
+        <div class="chip-group" id="connector-chips">
+          <button class="chip chip--selected" data-connector="CCS2">CCS2</button>
+          <button class="chip" data-connector="Type2">Type 2</button>
+          <button class="chip" data-connector="CHAdeMO">CHAdeMO</button>
+        </div>
+      </div>
+
+      <div class="computed-preview">
+        <span class="preview-label">USABLE ENERGY</span>
+        <span class="preview-value" id="usable-kwh">24.7 kWh</span>
+      </div>
+    </section>
+
+    <!-- Route Result -->
+    <section class="panel-section" id="route-result-section" aria-live="polite" aria-label="Route result">
+      <div class="route-result-card" id="route-result-card" data-state="hidden">
+        <div class="result-header">
+          <span class="result-label">ROUTE SUMMARY</span>
+          <span class="result-timestamp" id="result-time"></span>
+        </div>
+        <div class="result-stats-grid">
+          <div class="stat-cell">
+            <span class="stat-value" id="stat-distance">—</span>
+            <span class="stat-unit">km</span>
+            <span class="stat-label">DISTANCE</span>
+          </div>
+          <div class="stat-cell">
+            <span class="stat-value" id="stat-energy">—</span>
+            <span class="stat-unit">kWh</span>
+            <span class="stat-label">ENERGY</span>
+          </div>
+          <div class="stat-cell">
+            <span class="stat-value" id="stat-time">—</span>
+            <span class="stat-unit">min</span>
+            <span class="stat-label">EST. TIME</span>
+          </div>
+          <div class="stat-cell stat-cell--arrival">
+            <span class="stat-value arrival-soc" id="stat-arrival-soc">—</span>
+            <span class="stat-unit">%</span>
+            <span class="stat-label">ARRIVAL SOC</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charging stops container -->
+      <div class="charging-stops-container" id="charging-stops-container"></div>
+    </section>
+
+  </aside>
+
+  <!-- ═══ MAP CANVAS ═══ -->
+  <main class="map-canvas">
+    <div id="map"></div>
+  </main>
+
+  <!-- ═══ FEASIBILITY BANNER ═══ -->
+  <div id="feasibility-banner" class="feasibility-banner" data-state="hidden"
+       role="status" aria-live="assertive" aria-atomic="true">
+    <div class="banner__icon" id="banner-icon" aria-hidden="true"></div>
+    <div class="banner__message">
+      <span class="banner__title" id="banner-title"></span>
+      <span class="banner__subtitle" id="banner-subtitle"></span>
+    </div>
+    <button class="banner__dismiss" aria-label="Dismiss" onclick="dismissBanner()">✕</button>
+  </div>
+
+  <!-- ═══ SOC TRACE BAR ═══ -->
+  <div id="soc-trace-bar" class="soc-trace-bar" data-state="hidden"
+       role="img" aria-label="State of charge along route">
+    <div class="trace-header">
+      <span class="trace-label">SOC TRACE</span>
+      <span class="trace-range">
+        <span id="trace-start-soc">—</span>
+        <span class="trace-arrow">→</span>
+        <span id="trace-end-soc">—</span>
+      </span>
+    </div>
+    <div class="trace-segments-wrapper">
+      <div class="trace-segments" id="trace-segments" role="list"></div>
+      <div class="trace-charger-markers" id="trace-charger-markers" aria-hidden="true"></div>
+    </div>
+    <div class="trace-tooltip" id="trace-tooltip" role="tooltip" hidden></div>
+  </div>
+
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

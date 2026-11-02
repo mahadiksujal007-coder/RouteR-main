@@ -1,0 +1,240 @@
+{
+  "planHash": "b780007aa3fc4ec708020359cd99915a9f6bcfa356926e1d81896ade0ffe19a4",
+  "phase": "standalone",
+  "recordedAtUtc": "2026-11-02T12:40:17.4050495Z",
+  "retryCount": 0,
+  "resetBaseline": false,
+  "complete": true,
+  "result": {
+    "setupSucceeded": true,
+    "setupDurationMs": 30294,
+    "setupFailureOutput": null,
+    "assertions": [
+      {
+        "name": "typescript-lint",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\r\n\u003E make-my-route@1.0.0 lint\r\n\u003E tsc --noEmit\r\n\r\n",
+        "durationMs": 6068
+      },
+      {
+        "name": "tests-pass",
+        "kind": "process",
+        "verificationMethod": "test-results",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\r\n\u003E make-my-route@1.0.0 test\r\n\u003E npm run build:map-runtime \u0026\u0026 vitest run\r\n\r\n\r\n\u003E make-my-route@1.0.0 build:map-runtime\r\n\u003E vite build --config vite.map-runtime.config.ts\r\n\r\n\u001B[36mvite v8.3.5 \u001B[32mbuilding client environment for production...\u001B[36m\u001B[39m\r\ntransforming...\r\n\u2713 8 modules transformed.\r\nrendering chunks...\r\ncomputing gzip size...\r\npublic/static/charging-station-runtime.css     48.84 kB \u2502 gzip:   5.87 kB\r\npublic/static/charging-station-runtime.js   2,417.12 kB \u2502 gzip: 656.40 kB\r\n\r\n\u001B[32m\u2713 built in 1.01s\u001B[39m\r\n\u001B[33m(!) Your Vite config uses features that are unsupported by \u0060configLoader: \u0027native\u0027\u0060, which is planned to become the default in a future major version of Vite:\r\n  - \u0060__dirname\u0060 (vite.config.ts:11:27). Use \u0060import.meta.dirname\u0060 instead\r\nSet \u0060VITE_CONFIG_NATIVE_IGNORE_WARNING=true\u0060 to suppress this warning.\u001B[39m\r\n\r\n RUN  v5.0.5 C:/Users/Mahadik/Downloads/RouteR-main/RouteR-main\r\n\r\n\r\n Test Files  1 passed (1)\r\n      Tests  7 passed (7)\r\n   Start at  18:10:10\r\n   Duration  6.11s (tests 94%, import 4%, transform 2%)\r\n\r\n",
+        "durationMs": 9803,
+        "testResults": {
+          "testFramework": "vitest",
+          "runnerDetectedFrom": "package_json",
+          "testsTotal": 7,
+          "testsPassed": 7,
+          "testsFailed": 0,
+          "testsSkipped": 0,
+          "parseFailed": false
+        }
+      },
+      {
+        "name": "health-endpoint-200",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n{\u0022timestamp\u0022:1793623216.815,\u0022status\u0022:\u0022ready\u0022,\u0022region\u0022:\u0022Sangali, Maharashtra, India\u0022,\u0022graph\u0022:{\u0022status\u0022:\u0022ready\u0022,\u0022nodes\u0022:5120,\u0022edges\u0022:12480,\u0022enriched_edges\u0022:12480,\u0022coverage_pct\u0022:100},\u0022circuit_breakers\u0022:{\u0022ocm\u0022:{\u0022state\u0022:\u0022closed\u0022,\u0022failures\u0022:0},\u0022elevation\u0022:{\u0022state\u0022:\u0022closed\u0022,\u0022failures\u0022:0}},\u0022bulkheads\u0022:{\u0022routing\u0022:{\u0022available\u0022:20,\u0022max\u0022:20},\u0022ocm\u0022:{\u0022available\u0022:5,\u0022max\u0022:5}},\u0022cache\u0022:{\u0022l1_memory_keys\u0022:30999,\u0022l2_disk_files\u0022:4},\u0022metrics\u0022:{\u0022requests_total\u0022:7,\u0022routes_computed\u0022:0}}",
+        "durationMs": 15
+      },
+      {
+        "name": "mapbox-config-endpoint-200",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n{\u0022mapboxPublicToken\u0022:\u0022pk.eyJ1IjoibWFkZHl6IiwiYSI6ImNtdnh1cDU0ZTBrcDYyenMzY2JlMmZweTAifQ.cG-LJnaME31ACKfh2YyCIg\u0022}",
+        "durationMs": 12
+      },
+      {
+        "name": "station-inventory-endpoint-200",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n{\u0022total\u0022:30999,\u0022source_count\u0022:33314,\u0022minimum_zoom\u0022:9,\u0022inventory_source\u0022:\u0022Open Charge Map India \u002B JSON network inventory\u0022,\u0022stations\u0022:[{\u0022ocm_id\u0022:92771,\u0022name\u0022:\u0022Ola Charging Point\u0022,\u0022station_name\u0022:\u0022Ola Charging Point\u0022,\u0022lat\u0022:21.088568,\u0022lon\u0022:79.05439,\u0022power_kw\u0022:0,\u0022connector_type\u0022:\u0022CHAdeMO\u0022,\u0022connector_types\u0022:[\u0022CHAdeMO\u0022],\u0022current_type\u0022:\u0022Unknown\u0022,\u0022operator\u0022:\u0022(Business Owner at Location)\u0022,\u0022usage_type\u0022:\u0022Unknown access\u0022,\u0022is_public\u0022:false,\u0022status\u0022:\u0022Operational\u0022,\u0022address\u0022:\u0022\u0022,\u0022city\u0022:\u0022Nagpur\u0022,\u0022state\u0022:\u0022Maharashtra\u0022,\u0022data_provider\u0022:\u0022\u0022,\u0022date_last_verified\u0022:\u0022\u0022,\u0022data_source\u0022:\u0022stations_final.csv\u0022,\u0022is_fast_charge\u0022:false},{\u0022ocm_id\u0022:92772,\u0022name\u0022:\u0022Tata Power Receiving Station\u0022,\u0022station_name\u0022:\u0022Tata Power Receiving Station\u0022,\u0022lat\u0022:19.095796,\u0022lon\u0022:72.926011,\u0022power_kw\u0022:0,\u0022connector_type\u0022:\u0022Type1\u0022,\u0022connector_types\u0022:[\u0022Type1\u0022],\u0022current_type\u0022:\u0022Unknown\u0022,\u0022operator\u0022:\u0022(Business Owner at Location)\u0022,\u0022usage_type\u0022:\u0022Unknown access\u0022,\u0022is_public\u0022:false,\u0022status\u0022:\u0022Operational\u0022,\u0022address\u0022:\u0022\u0022,\u0022city\u0022:\u0022Mumbai\u0022,\u0022state\u0022:\u0022Maharashtra\u0022,\u0022data_provider\u0022:\u0022\u0022,\u0022date_last_verified\u0022:\u0022\u0022,\u0022data_source\u0022:\u0022stations_final.csv\u0022,\u0022is_fast_charge\u0022:false},{\u0022ocm_id\u0022:96047,\u0022name\u0022:\u0022Tellus Power (7.2kW)\u0022,\u0022station_name\u0022:\u0022Tellus Power\u0022,\u0022lat\u0022:17.413362,\u0022lon\u0022:78.426597,\u0022power_kw\u0022:7.2,\u0022connector_type\u0022:\u0022Type1\u0022,\u0022connector_types\u0022:[\u0022Type1\u0022],\u0022current_type\u0022:\u0022AC\u0022,\u0022operator\u0022:\u0022Unknown operator\u0022,\u0022usage_type\u0022:\u0022Unknown access\u0022,\u0022is_public\u0022:false,\u0022status\u0022:\u0022Operational\u0022,\u0022address\u0022:\u0022\u0022,\u0022city\u0022:\u0022Hyderabad\u0022,\u0022state\u0022:\u0022Telangana\u0022,\u0022data_provider\u0022:\u0022\u0022,\u0022date_last_verified\u0022:\u0022\u0022,\u0022data_source\u0022:\u0022stations_final.csv\u0022,\u0022is_fast_charge\u0022:false,\u0022best_connection\u0022:{\u0022effective_power_kw\u0022:7.2}},{\u0022ocm_id\u0022:103603,\u0022name\u0022:\u0022Ather Grid Point - Ascendas Park square mall (3kW)\u0022,\u0022station_name\u0022:\u0022Ather Grid Point - Ascendas Park square mall\u0022,\u0022lat\u0022:12.987219,\u0022lon\u0022:77.736474,\u0022power_kw\u0022:3,\u0022connector_type\u0022:\u0022Unknown\u0022,\u0022connector_types\u0022:[],\u0022current_type\u0022:\u0022AC\u0022,\u0022operator\u0022:\u0022(Unknown Operator)\u0022,\u0022usage_type\u0022:\u0022Unknown access\u0022,\u0022is_public\u0022:false,\u0022status\u0022:\u0022Operational\u0022,\u0022address\u0022:\u0022\u0022,\u0022city\u0022:\u0022Bangalore\u0022,\u0022state\u0022:\u0022Karnataka\u0022,\u0022data_provider\u0022:\u0022\u0022,\u0022date_last_verified\u0022:\u0022\u0022,\u0022data_source\u0022:\u0022stations_final.csv\u0022,\u0022is_fast_charge\u0022:false,\u0022best_connection\u0022:{\u0022effective_power_kw\u0022:3}},{\u0022ocm_id\u0022:103604,\u0022name\u0022:\u0022International Tech Park, Bangalore (3kW)\u0022,\u0022station_name\u0022:\u0022International Tech Park, Bangalore\u0022,\u0022lat\u0022:12.985421,\u0022lon\u0022:77.738513,\u0022power_kw\u0022:3,\u0022connector_type\u0022:\u0022Unknown\u0022,\u0022connector_types\u0022:[],\u0022current_type\u0022:\u0022AC\u0022,\u0022operator\u0022:\u0022(Unknown Operator)\u0022,\u0022usage_type\u0022:\u0022Unknown access\u0022,\u0022is_public\u0022:false,\u0022status\u0022:\u0022Operational\u0022,\u0022address\u0022:\u0022\u0022,\u0022city\u0022:\u0022Bangalore\u0022,\u0022state\u0022:\u0022Karnataka\u0022,\u0022data_provider\u0022:\u0022\u0022,\u0022date_last_verified\u0022:\u0022\u0022,\u0022data_source\u0022:\u0022stations_final.csv\u0022,\u0022is_fast_charge\u0022:false,\u0022best_connection\u0022:{\u0022effective_power_kw\u0022:3}},{\u0022ocm_id\u0022:103606,\u0022name\u0022:\u0022Ather Grid Point - Moto Store \u0026 Cafe (3kW)\u0022,\u0022station_name\u0022:\u0022Ather Grid Point - Moto Store \u0026 Cafe\u0022,\u0022lat\u0022:12.987554,\u0022lon\u0022:77.620871,\u0022power_kw\u0022:3,\u0022connector_type\u0022:\u0022Unknown\u0022,\u0022connector_types\u0022:[],\u0022current_type\u0022:\u0022AC\u0022,\u0022operator\u0022:\u0022(Unknown Operator)\u0022,\u0022usage_type\u0022:\u0022Unknown access\u0022,\u0022is_public\u0022:false,\u0022status\u0022:\u0022Operational\u0022,\u0022address\u0022:\u0022\u0022,\u0022city\u0022:\u0022Bangalore\u0022,\u0022state\u0022:\u0022Karnataka\u0022,\u0022data_provider\u0022:\u0022\u0022,\u0022date_last_verified\u0022:\u0022\u0022,\u0022data_source\u0022:\u0022stations_final.csv\u0022,\u0022is_fast_charge\u0022:false,\u0022best_connection\u0022:{\u0022effective_power_kw\u0022:3}},{\u0022ocm_id\u0022:103607,\u0022name\u0022:\u0022Ather Grid Point - Fab Cafe (3kW)\u0022,\u0022station_name\u0022:\u0022Ather Grid Point - Fab Cafe\u0022,\u0022lat\u0022:12.933942,\u0022lon\u0022:77.517452,\u0022power_kw\u0022:3,\u0022connector_type\u0022:\u0022Unknown\u0022,\u0022connector_types\u0022:[],\u0022current_type\u0022:\u0022AC\u0022,\u0022operator\u0022:\u0022(Unknown Operator)\u0022,\u0022usage_type\u0022:\u0022Unknown access\u0022,\u0022is_public\u0022:false,\u0022status\u0022:\u0022Operational\u0022,\u0022address\u0022:\u0022\u0022,\u0022city\u0022:\u0022Bengaluru\u0022,\u0022state\u0022:\u0022Karnataka\u0022,\u0022data_provider\u0022:\u0022\u0022,\u0022date_last_verified\u0022:\u0022\u0022,\u0022data_source\u0022:\u0022stations_final.csv\u0022,\u0022is_fast_charge\u0022:false,\u0022best_connection\u0022:{\u0022effective_power_kw\u0022:3}},{\u0022ocm_id\u0022:103609,\u0022name\u0022:\u0022Ather Grid Point - Caf Eleven (3kW)\u0022,\u0022station_name\u0022:\u0022Ather Grid Point - Caf Eleven\u0022,\u0022lat\u0022:12.923334,\u0022lon\u0022:77.554875,\u0022power_kw\u0022:3,\u0022connector_type\u0022:\u0022Unknown\u0022,\u0022connector_types\u0022:[],\u0022current_type\u0022:\u0022AC\u0022,\u0022operator\u0022:\u0022(Unknown Operator)\u0022,\u0022usage_type\u0022:\u0022Unknown access\u0022,\u0022is_public\u0022:false,\u0022status\u0022:\u0022Operational\u0022,\u0022address\u0022:\u0022\u0022,\u0022city\u0022:\u0022Bengaluru\u0022,\u0022s\n\u2026[truncated]",
+        "durationMs": 321
+      },
+      {
+        "name": "mapbox-page-200",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n\u003C!DOCTYPE html\u003E\n\u003Chtml lang=\u0022en\u0022\u003E\n\u003Chead\u003E\n  \u003Cmeta charset=\u0022UTF-8\u0022\u003E\n  \u003Cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1.0\u0022\u003E\n  \u003Ctitle\u003EMake My Route \u2014 Intelligent EV Route Planner\u003C/title\u003E\n  \u003Cmeta name=\u0022description\u0022 content=\u0022Energy-aware EV route planning with battery modeling, real-time SOC simulation, and OpenChargeMap charging stop insertion.\u0022\u003E\n  \u003Cmeta property=\u0022og:title\u0022 content=\u0022Make My Route \u2014 Intelligent EV Route Planner\u0022\u003E\n  \u003Cmeta property=\u0022og:description\u0022 content=\u0022Energy-aware EV route planning with battery modeling, real-time SOC simulation, and OpenChargeMap charging stop insertion.\u0022\u003E\n  \u003Cmeta property=\u0022og:type\u0022 content=\u0022website\u0022\u003E\n  \u003Cmeta name=\u0022twitter:card\u0022 content=\u0022summary_large_image\u0022\u003E\n\n  \u003Clink rel=\u0022stylesheet\u0022 href=\u0022/static/charging-station-runtime.css\u0022\u003E\n  \u003Cscript defer src=\u0022/static/charging-station-runtime.js\u0022\u003E\u003C/script\u003E\n\n  \u003C!-- Design System --\u003E\n  \u003Clink rel=\u0022stylesheet\u0022 href=\u0022/static/index.css\u0022\u003E\n\u003C/head\u003E\n\u003Cbody\u003E\n\n\u003Cdiv class=\u0022app-root\u0022\u003E\n\n  \u003C!-- \u2550\u2550\u2550 TOPBAR \u2550\u2550\u2550 --\u003E\n  \u003Cheader class=\u0022topbar\u0022\u003E\n    \u003Cdiv class=\u0022logo-mark\u0022\u003E\n      \u003Cdiv class=\u0022logo-icon\u0022\u003E\u26A1\u003C/div\u003E\n      \u003Cdiv style=\u0022display:flex; flex-direction:column; line-height: 1.2;\u0022\u003E\n        \u003Cspan class=\u0022logo-text\u0022\u003EMake My Route\u003C/span\u003E\n        \u003Cspan style=\u0022font-size: 11px; color: var(--text-tertiary); font-family: var(--font-display);\u0022\u003ESangli Corridor \u00B7 Medium-Duty EV Engine\u003C/span\u003E\n      \u003C/div\u003E\n    \u003C/div\u003E\n    \u003Cdiv class=\u0022system-status\u0022\u003E\n      \u003Cdiv class=\u0022status-dot\u0022 id=\u0022status-dot\u0022 data-status=\u0022loading\u0022\u003E\u003C/div\u003E\n      \u003Cspan id=\u0022system-status-text\u0022\u003EConnecting\u2026\u003C/span\u003E\n    \u003C/div\u003E\n    \u003Cdiv style=\u0022display: flex; align-items: center; gap: var(--space-3);\u0022\u003E\n      \u003Cbutton id=\u0022btn-open-stations\u0022 class=\u0022benchmark-nav-btn\u0022 style=\u0022border-color: rgba(0, 229, 160, 0.4); color: #00E5A0;\u0022 aria-label=\u0022Open state charging network database\u0022\u003E\n        \u003Csvg viewBox=\u00220 0 24 24\u0022 width=\u002214\u0022 height=\u002214\u0022 fill=\u0022none\u0022 stroke=\u0022currentColor\u0022 stroke-width=\u00222\u0022\u003E\u003Cpath d=\u0022M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\u0022/\u003E\u003C/svg\u003E\n        \u003Cspan\u003EEV Station Inventory (\u003Cspan id=\u0022station-count-badge\u0022\u003E0\u003C/span\u003E)\u003C/span\u003E\n      \u003C/button\u003E\n      \u003Cbutton id=\u0022btn-open-storyline\u0022 class=\u0022storyline-nav-btn\u0022 aria-label=\u0022Open route diagnostics \u0026 storyline\u0022\u003E\n        \u003Csvg viewBox=\u00220 0 24 24\u0022 width=\u002214\u0022 height=\u002214\u0022 fill=\u0022none\u0022 stroke=\u0022currentColor\u0022 stroke-width=\u00222\u0022\u003E\u003Cpath d=\u0022M13 2L3 14h9l-1 8 10-12h-9l1-8z\u0022/\u003E\u003C/svg\u003E\n        \u003Cspan\u003EStoryline \u0026 Diagnostics\u003C/span\u003E\n        \u003Cspan id=\u0022storyline-badge\u0022 class=\u0022storyline-badge\u0022 style=\u0022display:none;\u0022\u003EMitigated\u003C/span\u003E\n      \u003C/button\u003E\n      \u003Cbutton id=\u0022btn-open-benchmark\u0022 class=\u0022benchmark-nav-btn\u0022 aria-label=\u0022Open scenario benchmark suite\u0022\u003E\n        \u003Csvg viewBox=\u00220 0 24 24\u0022 width=\u002214\u0022 height=\u002214\u0022 fill=\u0022none\u0022 stroke=\u0022currentColor\u0022 stroke-width=\u00222\u0022\u003E\u003Cpath d=\u0022M9 11l3 3L22 4\u0022/\u003E\u003Cpath d=\u0022M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11\u0022/\u003E\u003C/svg\u003E\n        \u003Cspan\u003EBenchmark Test Suite\u003C/span\u003E\n      \u003C/button\u003E\n      \u003Cdiv class=\u0022attribution\u0022 style=\u0022font-family: var(--font-display); font-size: var(--fs-micro); color: var(--text-tertiary);\u0022\u003E\n        Charging data: \u003Ca href=\u0022https://openchargemap.org\u0022 target=\u0022_blank\u0022 rel=\u0022noopener\u0022 style=\u0022color: var(--text-tertiary);\u0022\u003EOpenChargeMap\u003C/a\u003E (CC BY 4.0)\n      \u003C/div\u003E\n    \u003C/div\u003E\n  \u003C/header\u003E\n\n  \u003C!-- \u2550\u2550\u2550 LEFT PANEL \u2550\u2550\u2550 --\u003E\n  \u003Caside class=\u0022left-panel\u0022 id=\u0022left-panel\u0022\u003E\n\n    \u003C!-- Route Input --\u003E\n    \u003Csection class=\u0022panel-section\u0022 aria-label=\u0022Route input\u0022\u003E\n      \u003Cdiv class=\u0022section-header\u0022\u003E\n        \u003Cspan class=\u0022section-icon\u0022\u003E\u25C9\u003C/span\u003E\n        \u003Cspan class=\u0022section-label\u0022\u003ERoute\u003C/span\u003E\n      \u003C/div\u003E\n\n      \u003Cdiv class=\u0022route-input-group\u0022\u003E\n        \u003Cdiv class=\u0022input-row\u0022\u003E\n          \u003Cdiv class=\u0022input-dot\u0022\u003E\u003C/div\u003E\n          \u003Cinput type=\u0022text\u0022 class=\u0022location-input\u0022 id=\u0022origin-input\u0022\n                 placeholder=\u0022Click map \u2014 origin (e.g. Sangli)\u0022 readonly\n                 aria-label=\u0022Origin location\u0022\u003E\n          \u003Cbutton id=\u0022btn-use-my-location\u0022 class=\u0022location-action-btn\u0022 title=\u0022Get current GPS location (navigator.geolocation) and find nearby chargers\u0022\u003E\n            \u003Csvg viewBox=\u00220 0 24 24\u0022 width=\u002213\u0022 height=\u002213\u0022 fill=\u0022none\u0022 stroke=\u0022currentColor\u0022 stroke-widt\n\u2026[truncated]",
+        "durationMs": 15
+      },
+      {
+        "name": "mapbox-frontend-script-200",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n   MAKE MY ROUTE \u2014 Frontend Application\n   EV Routing \u00B7 OpenChargeMap \u00B7 Real-Time Animation Simulation\n   \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */\n\nconst API_BASE = window.location.origin;\n\n// \u2500\u2500\u2500 Map \u0026 Routing State \u2500\u2500\u2500\nlet map;\nlet originMarker = null;\nlet destMarker = null;\nlet baseRoutePolyline = null;\nlet activeRoutePolyline = null;\nlet unmitigatedPolyline = null;\nlet unmitigatedStopMarkers = [];\nlet currentRouteData = null;\nlet vehicleMarker = null;\nlet stationMarkers = [];\nlet nearbyStationMarkers = [];\nlet isStationsLayerVisible = true;\nlet isArchitecturalLayerVisible = true;\nlet activePowerFilter = \u0022all\u0022;\nlet userLocationMarker = null;\nlet allStateStations = [];\nlet focusedStationMarker = null;\nlet stationDataPromise = null;\nlet mapReadyPromise = null;\nlet mapStatusElement = null;\nlet mapboxFallbackActive = false;\nlet chargingStation3DLayer = null;\nlet stationFeatures = [];\nlet activeTrailChunkIds = [];\nlet activeTrailChunkData = [];\nlet activeTrailLiveFeature = emptyFeatureCollection();\nlet activeMapPopup = null;\nconst mapPointGroups = {\n  origin: new Map(),\n  destination: new Map(),\n  chargingStop: new Map(),\n  nearbyStation: new Map(),\n  vehicle: new Map(),\n  userLocation: new Map(),\n  focusedStation: new Map(),\n  unmitigatedStop: new Map(),\n};\nconst MAP_POINT_SOURCES = {\n  origin: \u0022origin-source\u0022,\n  destination: \u0022destination-source\u0022,\n  chargingStop: \u0022charging-stops-source\u0022,\n  nearbyStation: \u0022nearby-stations-source\u0022,\n  vehicle: \u0022vehicle-position-source\u0022,\n  userLocation: \u0022user-location-source\u0022,\n  focusedStation: \u0022focused-station-source\u0022,\n  unmitigatedStop: \u0022unmitigated-stops-source\u0022,\n};\nlet clickMode = \u0022origin\u0022; // \u0022origin\u0022 | \u0022destination\u0022\nlet originCoords = null;\nlet destCoords = null;\nconst STATION_DISPLAY_MIN_ZOOM = 9;\n\n// \u2500\u2500\u2500 Animation State Machine \u2500\u2500\u2500\nconst anim = {\n  isPlaying: false,\n  progress: 0.0, // 0.0 to 1.0\n  speed: 1.0,    // 1x, 2x, 5x\n  rafId: null,\n  lastTimestamp: null,\n  isCharging: false,\n  chargeStartTime: null,\n  currentStopIndex: -1,\n  handledStopIndices: new Set(),\n  routeData: null,\n  cumDistances: [], // cumulative distance in meters at each coordinate index\n  totalDistanceMeters: 0,\n  cameraFollowCenter: null,\n  cameraFollowBearing: null,\n  lastCameraFollowAt: 0,\n  lastStationViewportRefreshAt: 0,\n  activeTrailPolyline: null,\n  completedTrailChunks: 0,\n};\n\nconst ANIMATION_TRAIL_CHUNK_SIZE = 128;\nconst CHARGING_STOP_DURATION_MS = 2800;\n\n// Sangli Default Center\nconst SANGLI_CENTER = [16.8524, 74.5815];\nconst MAPBOX_STYLE = \u0022mapbox://styles/mapbox/streets-v12\u0022;\nconst OSM_MAPBOX_STYLE = {\n  version: 8,\n  sources: {\n    openstreetmap: {\n      type: \u0022raster\u0022,\n      tiles: [\u0022https://tile.openstreetmap.org/{z}/{x}/{y}.png\u0022],\n      tileSize: 256,\n      attribution: \u0027\u0026copy; \u003Ca href=\u0022https://www.openstreetmap.org/copyright\u0022\u003EOpenStreetMap\u003C/a\u003E\u0027,\n    },\n  },\n  layers: [{ id: \u0022openstreetmap-raster\u0022, type: \u0022raster\u0022, source: \u0022openstreetmap\u0022 }],\n};\n\nfunction escapeHtml(value) {\n  return String(value ?? \u0022\u0022).replace(/[\u0026\u003C\u003E\u0022\u0027]/g, (char) =\u003E ({\n    \u0022\u0026\u0022: \u0022\u0026amp;\u0022,\n    \u0022\u003C\u0022: \u0022\u0026lt;\u0022,\n    \u0022\u003E\u0022: \u0022\u0026gt;\u0022,\n    \u0027\u0022\u0027: \u0022\u0026quot;\u0022,\n    \u0022\u0027\u0022: \u0022\u0026#39;\u0022,\n  })[char]);\n}\n\nfunction encodeInlineValue(value) {\n  return encodeURIComponent(String(value ?? \u0022\u0022)).replace(/\u0027/g, \u0022%27\u0022);\n}\n\nfunction normalizeStationConnectors(value) {\n  const normalized = new Set();\n  String(value || \u0022\u0022).split(\u0022;\u0022).forEach((name) =\u003E {\n    const connector = name.trim().toLowerCase();\n    if (connector.includes(\u0022ccs\u0022)) {\n      normalized.add(/ccs\\s*1|type\\s*1|combo\\s*1/.test(connector) ? \u0022CCS1\u0022 : \u0022CCS2\u0022);\n    }\n    if (/type\\s*2/.test(connector)) normalized.add(\u0022Type2\u0022);\n    if (connector.includes(\u0022chademo\u0022)) normalized.add(\u0022CHAdeMO\u0022);\n    if (/gb\\s*[-/]?\\s*t/.test(connector)) normalized.add(\u0022GB/T\u0022);\n    if (/type\\s*1|j1772/.test(connector)) normalized.add(\u0022Type1\u0022);\n  });\n  return Array.from(normalized);\n}\n\nasync function ensureStationInventoryLoaded() {\n  if (allStateStations.length \u003E 0) return allStateStations;\n  if (!stationDataPromise) {\n    stationDataPromise = f\n\u2026[truncated]",
+        "durationMs": 15
+      },
+      {
+        "name": "three-map-runtime-200",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n(function(){var e=Object.create,t=Object.defineProperty,n=Object.getOwnPropertyDescriptor,r=Object.getOwnPropertyNames,i=Object.getPrototypeOf,a=Object.prototype.hasOwnProperty,o=(e,t)=\u003E()=\u003E(t||(e((t={exports:{}}).exports,t,t.exports),e=null),t.exports),s=(e,i,o,s)=\u003E{if(i\u0026\u0026typeof i==\u0060object\u0060||typeof i==\u0060function\u0060)for(var c=r(i),l=0,u=c.length,d;l\u003Cu;l\u002B\u002B)d=c[l],!a.call(e,d)\u0026\u0026d!==o\u0026\u0026t(e,d,{get:(e=\u003Ei[e]).bind(null,d),enumerable:!(s=n(i,d))||s.enumerable});return e},c=((n,r,a)=\u003E(a=n==null?{}:e(i(n)),s(t(a,\u0060default\u0060,{value:n,enumerable:!0}),n)))(o(((e,t,n)=\u003E{(function(n,r){typeof e==\u0060object\u0060\u0026\u0026t!==void 0?t.exports=r():typeof define==\u0060function\u0060\u0026\u0026define.amd?define(r):(n=typeof globalThis\u003C\u0060u\u0060?globalThis:n||self,n.mapboxgl=r())})(n,(function(){\u0022use strict\u0022;let e,t,n,r,i;typeof self\u003C\u0060u\u0060\u0026\u0026(self.__mapboxImport=e=\u003Eimport(e));function a(a,o){if(!e)e=o,t=a;else if(!n)n=o,r=a;else{let s={},c=e=\u003Ee.map(e=\u003Ee===\u0060require\u0060?void 0:s);e(...c(t)),i=o(...c(a));let l=e=\u003Ee.map(e=\u003Ee===\u0060require\u0060?\u0060undefined\u0060:\u0060sharedChunk\u0060).join(\u0060, \u0060),u=\u0060self.onerror = function() { console.error(\u0027An error occurred while parsing the WebWorker bundle. This is most likely due to improper transpilation by Babel; please see https://docs.mapbox.com/mapbox-gl-js/guides/install/#transpiling\u0027); }; var sharedChunk = {}; self.__mapboxImport = (u) =\u003E import(u); (\u0060\u002Be\u002B\u0060)(\u0060\u002Bl(t)\u002B\u0060); (\u0060\u002Bn\u002B\u0060)(\u0060\u002Bl(r)\u002B\u0060); self.onerror = null;\u0060;typeof window\u003C\u0060u\u0060\u0026\u0026window\u0026\u0026window.URL\u0026\u0026window.URL.createObjectURL\u0026\u0026(i.workerUrl=window.URL.createObjectURL(new Blob([u],{type:\u0060text/javascript\u0060})))}}return a([\u0060require\u0060,\u0060exports\u0060],function(e,t){var n=\u00603.33.0\u0060,r=1e-6,i=typeof Float32Array\u003C\u0060u\u0060?Float32Array:Array;function a(e,t){var n=t[0],r=t[1],i=t[2],a=t[3],o=n*a-i*r;return o?(e[0]=a*(o=1/o),e[1]=-r*o,e[2]=-i*o,e[3]=n*o,e):null}function o(){var e=new i(9);return i!=Float32Array\u0026\u0026(e[1]=0,e[2]=0,e[3]=0,e[5]=0,e[6]=0,e[7]=0),e[0]=1,e[4]=1,e[8]=1,e}function s(e,t,n){var r=t[0],i=t[1],a=t[2],o=t[3],s=t[4],c=t[5],l=t[6],u=t[7],d=t[8],f=n[0],p=n[1],m=n[2],h=n[3],g=n[4],_=n[5],v=n[6],y=n[7],b=n[8];return e[0]=f*r\u002Bp*o\u002Bm*l,e[1]=f*i\u002Bp*s\u002Bm*u,e[2]=f*a\u002Bp*c\u002Bm*d,e[3]=h*r\u002Bg*o\u002B_*l,e[4]=h*i\u002Bg*s\u002B_*u,e[5]=h*a\u002Bg*c\u002B_*d,e[6]=v*r\u002By*o\u002Bb*l,e[7]=v*i\u002By*s\u002Bb*u,e[8]=v*a\u002By*c\u002Bb*d,e}function c(e,t){var n=Math.sin(t),r=Math.cos(t);return e[0]=r,e[1]=n,e[2]=0,e[3]=-n,e[4]=r,e[5]=0,e[6]=0,e[7]=0,e[8]=1,e}function l(){var e=new i(16);return i!=Float32Array\u0026\u0026(e[1]=0,e[2]=0,e[3]=0,e[4]=0,e[6]=0,e[7]=0,e[8]=0,e[9]=0,e[11]=0,e[12]=0,e[13]=0,e[14]=0),e[0]=1,e[5]=1,e[10]=1,e[15]=1,e}function u(e){var t=new i(16);return t[0]=e[0],t[1]=e[1],t[2]=e[2],t[3]=e[3],t[4]=e[4],t[5]=e[5],t[6]=e[6],t[7]=e[7],t[8]=e[8],t[9]=e[9],t[10]=e[10],t[11]=e[11],t[12]=e[12],t[13]=e[13],t[14]=e[14],t[15]=e[15],t}function d(e,t){return e[0]=t[0],e[1]=t[1],e[2]=t[2],e[3]=t[3],e[4]=t[4],e[5]=t[5],e[6]=t[6],e[7]=t[7],e[8]=t[8],e[9]=t[9],e[10]=t[10],e[11]=t[11],e[12]=t[12],e[13]=t[13],e[14]=t[14],e[15]=t[15],e}function f(e){return e[0]=1,e[1]=0,e[2]=0,e[3]=0,e[4]=0,e[5]=1,e[6]=0,e[7]=0,e[8]=0,e[9]=0,e[10]=1,e[11]=0,e[12]=0,e[13]=0,e[14]=0,e[15]=1,e}function p(e,t){if(e===t){var n=t[1],r=t[2],i=t[3],a=t[6],o=t[7],s=t[11];e[1]=t[4],e[2]=t[8],e[3]=t[12],e[4]=n,e[6]=t[9],e[7]=t[13],e[8]=r,e[9]=a,e[11]=t[14],e[12]=i,e[13]=o,e[14]=s}else e[0]=t[0],e[1]=t[4],e[2]=t[8],e[3]=t[12],e[4]=t[1],e[5]=t[5],e[6]=t[9],e[7]=t[13],e[8]=t[2],e[9]=t[6],e[10]=t[10],e[11]=t[14],e[12]=t[3],e[13]=t[7],e[14]=t[11],e[15]=t[15];return e}function m(e,t){var n=t[0],r=t[1],i=t[2],a=t[3],o=t[4],s=t[5],c=t[6],l=t[7],u=t[8],d=t[9],f=t[10],p=t[11],m=t[12],h=t[13],g=t[14],_=t[15],v=n*s-r*o,y=n*c-i*o,b=n*l-a*o,x=r*c-i*s,S=r*l-a*s,C=i*l-a*c,w=u*h-d*m,T=u*g-f*m,E=u*_-p*m,D=d*g-f*h,O=d*_-p*h,k=f*_-p*g,A=v*k-y*O\u002Bb*D\u002Bx*E-S*T\u002BC*w;return A?(e[0]=(s*k-c*O\u002Bl*D)*(A=1/A),e[1]=(i*O-r*k-a*D)*A,e[2]=(h*C-g*S\u002B_*x)*A,e[3]=(f*S-d*C-p*x)*A,e[4]=(c*E-o*k-l*T)*A,e[5]=(n*k-i*E\u002Ba*T)*A,e[6]=(g*b-m*C-_*y)*A,e[7]=(u*C-f*b\u002Bp*y)*A,e[8]=(o*O-s*E\u002Bl*w)*A,e[9]=(r*E-n*O-a*w)*A,e[10]=(m*S-h*b\u002B_*v)*A,e[11]=(d*b-u*S-p*v)*A,e[12]=(s*T-o*D-c*w)*A,e[13]=(n*D-r*T\u002Bi*w)*A,e[14]=(h*y-m*x-g*v)*A,e[15]=(u*x-d*y\u002Bf*v)*A,e):null}function h(e,t,n){var r=t[0],i=t[\n\u2026[truncated]",
+        "durationMs": 25
+      }
+    ],
+    "executions": [
+      {
+        "source": "setup[0]",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "ci"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "typescript-lint",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "lint"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "tests-pass",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "test"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {},
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "health-endpoint-200",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {
+          "PORT": "32140"
+        },
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "mapbox-config-endpoint-200",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {
+          "PORT": "32140"
+        },
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "station-inventory-endpoint-200",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {
+          "PORT": "32140"
+        },
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "mapbox-page-200",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {
+          "PORT": "32140"
+        },
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "mapbox-frontend-script-200",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {
+          "PORT": "32140"
+        },
+        "prependPath": [],
+        "platform": "win32"
+      },
+      {
+        "source": "three-map-runtime-200",
+        "resolvedExecutable": "C:\\Program Files\\nodejs\\npm.CMD",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "C:\\Users\\Mahadik\\Downloads\\RouteR-main\\RouteR-main",
+        "env": {
+          "PORT": "32140"
+        },
+        "prependPath": [],
+        "platform": "win32"
+      }
+    ]
+  }
+}

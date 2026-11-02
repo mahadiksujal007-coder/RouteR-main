@@ -1,0 +1,13 @@
+EV charging post model
+
+Asset: EV charging post (Motorway Services and Truck Park)
+Local file: ev-charging-post.glb
+Source page: https://3dassets.dev/assets/motorway-services-and-truck-park-ev-charging-post-8ff36140
+Direct download: https://cdn.3dassets.dev/assets/35957/v1/model.glb
+License: CC0 1.0 Universal
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
+Reported dimensions: 0.897 x 1.74 x 0.54 meters
+Reported geometry: 1,040 triangles, 6 meshes, 6 materials, no textures
+Coordinate convention: +Y up, model base at y=0
+
+The source page identifies this asset as CC0. This record is retained for provenance.

@@ -1,0 +1,6 @@
+{
+  "name": "Make My Route — Intelligent EV Route Planner",
+  "description": "Energy-aware EV route planning with battery modeling, real-time SOC simulation, and OpenChargeMap charging stop insertion.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

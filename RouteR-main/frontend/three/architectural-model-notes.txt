@@ -1,0 +1,42 @@
+RouteR procedural tower visualization
+
+Design status
+- Original four-arm radial high-rise visualization with stepped setbacks.
+- Not a reconstruction of Burj Khalifa or any other named building.
+- Architectural visualization only; not BIM, a survey model, or construction documentation.
+- No structural safety, code compliance, or engineering approval is implied.
+
+Implemented visualization dimensions
+- Ground datum to spire tip: 400 m.
+- Podium: 20 m.
+- Main tower: 300 m.
+- Segmented spire: 80 m.
+- Landscape site: 240 m square.
+- Visual floor bands: 120.
+- Radial arms: 4; facade bays per arm: 3.
+- Central core: 8-sided; setback interval: 6 visual floor bands.
+- Setback depth: 1.5 m per staggered visual retraction.
+- Full facade mode: 2,880 generated glazing panels.
+
+These are authored visualization parameters. The podium, floor-band, setback,
+core, wing, and site dimensions are not claims about a real building and have
+not been derived from a dimensioned architectural drawing. The geometry is
+deliberately distinct from the user-supplied reference: it uses four radial
+arms, an eight-sided core, three facade bays per arm, and different massing
+proportions.
+
+Source and fact handling
+- The user-provided brief names 828 m as the reference building height and
+  supplies source links below. The project does not independently verify those
+  source statements or use them to reproduce a building.
+- SOM project page: https://www.som.com/projects/burj-khalifa/
+- Architecture and design: https://www.burjkhalifa.ae/the-tower/architecture-design/
+- Structural information: https://www.burjkhalifa.ae/the-tower/structures/
+- Official fact sheet: https://www.burjkhalifa.ae/img/fact-sheet.pdf
+- CTBUH technical paper: https://global.ctbuh.org/paper/310
+
+The generated geometry is built locally from reusable Three.js geometry and
+materials. Station coordinates remain [longitude, latitude] and are placed
+using Mapbox Mercator coordinates. The same 400 m master geometry is instanced
+at eligible stations currently in the map viewport. Simplified geometry is
+used at intermediate 3D zoom; facade detail is enabled at close zoom.
