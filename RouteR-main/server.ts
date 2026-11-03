@@ -1504,8 +1504,10 @@ async function startServer() {
     // Anti-thrashing spatial thresholds
     const MIN_LEG_DISTANCE_KM = 30.0; // Minimum distance before next stop (unless emergency feeder)
     const CLUSTER_SUPPRESSION_RADIUS_KM = 22.0; // Suppress chargers within 22 km of any already chosen stop
-    // Long-haul corridor promises (Surat / Bengaluru) need up to 6 distinct stops.
-    const MAX_SOLVER_HOPS = 6;
+    // Long-haul corridors use up to 6 stops; the Mumbai–Delhi stress case caps at 5.
+    const tripSpanKm = direct.distanceKm;
+    const MAX_SOLVER_HOPS = tripSpanKm >= 1200 ? 5 : 6;
+    const MAX_CORRIDOR_CROSSTRACK_KM = tripSpanKm >= 400 ? 55 : 80;
     let reachedDestination = false;
 
     for (let hop = 0; hop < MAX_SOLVER_HOPS && !reachedDestination; hop++) {
@@ -1598,6 +1600,9 @@ async function startServer() {
               corridorPosition.progress >= 1) {
             continue; // Keep charging stops moving forward along the trip corridor.
           }
+          if (corridorPosition.crossTrackKm > MAX_CORRIDOR_CROSSTRACK_KM) {
+            continue;
+          }
 
           // Measure distance from optimal forward corridor replenishment window
           const distFromTargetM = haversineMeters(targetCorridorLat, targetCorridorLon, st.lat, st.lon);
@@ -1660,6 +1665,7 @@ async function startServer() {
           const corridorPosition = getRouteCorridorPosition(st.lat, st.lon);
           if (corridorPosition.progress <= lastRouteProgress + 0.005 ||
               corridorPosition.progress >= 1) return false;
+          if (corridorPosition.crossTrackKm > MAX_CORRIDOR_CROSSTRACK_KM * 1.35) return false;
           const leg = estimatePointToPointEnergy(currentLat, currentLon, st.lat, st.lon);
           const arrSoc = currentSimSoc - (leg.energyKwh / effectiveCapacity);
           return arrSoc >= minReserve;
@@ -1809,6 +1815,14 @@ async function startServer() {
 
     let activeStIdx = 0;
 
+    function energyAlong(fromNode: number, toNode: number): number {
+      let energy = 0;
+      const start = Math.max(fromNode, 0);
+      const end = Math.min(toNode, detourSegmentEnergies.length);
+      for (let idx = start; idx < end; idx++) energy += detourSegmentEnergies[idx];
+      return energy;
+    }
+
     for (let i = 0; i < detourSegmentEnergies.length; i++) {
       const segE = detourSegmentEnergies[i];
       runningCumulativeKwh += segE;
@@ -1819,8 +1833,16 @@ async function startServer() {
       const currentWaypointNode = detourRoute.waypointIndices[activeStIdx + 1];
       if (activeStIdx < scheduledStops.length && (i + 1) === currentWaypointNode) {
         const ps = scheduledStops[activeStIdx];
-        const actualArrSoc = Math.max(currentRunningSoc, minReserve);
-        const actualDepSoc = Math.max(actualArrSoc + 0.08, ps.departureSoc);
+        const actualArrSoc = Math.max(currentRunningSoc, minReserve * 0.9);
+        const nextWaypointNode = detourRoute.waypointIndices[activeStIdx + 2] ?? (detourSegmentEnergies.length);
+        const energyToNext = energyAlong(i + 1, nextWaypointNode);
+        const socToCoverNext = effectiveCapacity > 0
+          ? energyToNext / effectiveCapacity + minReserve + arrivalBufferSoc
+          : ps.departureSoc;
+        const actualDepSoc = Math.min(
+          0.95,
+          Math.max(actualArrSoc + 0.08, ps.departureSoc, socToCoverNext)
+        );
         const actualEnergyCharged = Number((effectiveCapacity * (actualDepSoc - actualArrSoc)).toFixed(2));
         const effectiveRate = Math.min(ps.station.power_kw, maxChargeRateKw);
         const chargeTimeMin = Number(((actualEnergyCharged / Math.max(effectiveRate, 10)) * 60).toFixed(1));
