@@ -29,6 +29,9 @@ let mapReadyPromise = null;
 let mapStatusElement = null;
 let mapboxFallbackActive = false;
 let chargingStation3DLayer = null;
+let futureCity3DLayer = null;
+let futureCityScenario = emptyFeatureCollection();
+let futureCityRequestId = 0;
 let stationFeatures = [];
 let activeTrailChunkIds = [];
 let activeTrailChunkData = [];
@@ -60,6 +63,14 @@ let destCoords = null;
 const STATION_DISPLAY_MIN_ZOOM = 9;
 const TERRAIN_SOURCE_ID = "route-terrain-dem";
 const TERRAIN_HILLSHADE_LAYER_ID = "route-terrain-hillshade";
+const FUTURE_CITY_SOURCE_ID = "future-city-scenario-source";
+const FUTURE_CITY_LAYER_IDS = {
+  existingBuildings: "future-city-existing-buildings",
+  futureBuildings: "future-city-proposed-buildings",
+  futureBuildingPick: "future-city-building-pick",
+  districts: "future-city-districts",
+  greenCorridors: "future-city-green-corridors",
+};
 
 // ─── Animation State Machine ───
 const anim = {
@@ -438,6 +449,168 @@ function addPointLayers(sourceId, prefix, { minzoom = 0 } = {}) {
   }
 }
 
+function installFutureCityMapLayers() {
+  const sourceId = FUTURE_CITY_SOURCE_ID;
+  const boundaryLayerId = "future-city-provisional-boundary";
+  if (!map.getLayer(FUTURE_CITY_LAYER_IDS.districts)) {
+    map.addLayer({
+      id: FUTURE_CITY_LAYER_IDS.districts,
+      type: "fill",
+      source: sourceId,
+      filter: ["==", ["get", "feature_type"], "future-district"],
+      paint: {
+        "fill-color": ["coalesce", ["get", "color"], "#78909c"],
+        "fill-opacity": 0.12,
+        "fill-outline-color": ["coalesce", ["get", "color"], "#78909c"],
+      },
+    });
+  }
+  if (!map.getLayer(boundaryLayerId)) {
+    map.addLayer({
+      id: boundaryLayerId,
+      type: "line",
+      source: sourceId,
+      filter: ["==", ["get", "feature_type"], "settlement-boundary"],
+      paint: {
+        "line-color": "#f0ca7a",
+        "line-width": 2,
+        "line-dasharray": [2, 1.5],
+        "line-opacity": 0.9,
+      },
+    });
+  }
+  if (!map.getLayer(FUTURE_CITY_LAYER_IDS.greenCorridors)) {
+    map.addLayer({
+      id: FUTURE_CITY_LAYER_IDS.greenCorridors,
+      type: "line",
+      source: sourceId,
+      filter: ["==", ["get", "feature_type"], "future-green-corridor"],
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: {
+        "line-color": "#44d49b",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2, 15, 7],
+        "line-opacity": 0.8,
+        "line-blur": 0.5,
+      },
+    });
+  }
+  if (!map.getLayer(FUTURE_CITY_LAYER_IDS.existingBuildings)) {
+    map.addLayer({
+      id: FUTURE_CITY_LAYER_IDS.existingBuildings,
+      type: "fill-extrusion",
+      source: sourceId,
+      minzoom: 14,
+      filter: ["==", ["get", "feature_type"], "existing-building"],
+      paint: {
+        "fill-extrusion-color": "#89949a",
+        "fill-extrusion-height": ["coalesce", ["get", "height_m"], 8],
+        "fill-extrusion-base": 0,
+        "fill-extrusion-opacity": 0.88,
+        "fill-extrusion-vertical-gradient": true,
+      },
+    });
+  }
+  if (!map.getLayer(FUTURE_CITY_LAYER_IDS.futureBuildings)) {
+    map.addLayer({
+      id: FUTURE_CITY_LAYER_IDS.futureBuildings,
+      type: "fill-extrusion",
+      source: sourceId,
+      minzoom: 12,
+      filter: [
+        "all",
+        ["==", ["get", "feature_type"], "future-building"],
+        ["!=", ["get", "building_type"], "signature"],
+      ],
+      paint: {
+        "fill-extrusion-color": [
+          "match",
+          ["get", "building_type"],
+          "secondary_skyscraper", "#c5b9e8",
+          "high_rise", "#91b9cc",
+          "mid_rise", "#8db4a0",
+          "low_rise", "#a9aa91",
+          "#92a9ad",
+        ],
+        "fill-extrusion-height": ["coalesce", ["get", "height_m"], 8],
+        "fill-extrusion-base": ["coalesce", ["get", "base_height_m"], 0],
+        "fill-extrusion-opacity": 0.88,
+        "fill-extrusion-vertical-gradient": true,
+      },
+    });
+  }
+  if (!map.getLayer(FUTURE_CITY_LAYER_IDS.futureBuildingPick)) {
+    map.addLayer({
+      id: FUTURE_CITY_LAYER_IDS.futureBuildingPick,
+      type: "fill",
+      source: sourceId,
+      minzoom: 12,
+      filter: [
+        "in",
+        ["get", "feature_type"],
+        ["literal", ["future-building", "existing-building"]],
+      ],
+      paint: { "fill-color": "#ffffff", "fill-opacity": 0.01 },
+    });
+  }
+  if (!map.getLayer("future-city-tower-symbols")) {
+    map.addLayer({
+      id: "future-city-tower-symbols",
+      type: "circle",
+      source: sourceId,
+      minzoom: 9.5,
+      maxzoom: 11.5,
+      filter: ["==", ["get", "feature_type"], "future-tower"],
+      paint: {
+        "circle-color": "#e9c879",
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 9.5, 3.5, 11.5, 6],
+        "circle-stroke-color": "#fff5d5",
+        "circle-stroke-width": 1.5,
+        "circle-opacity": 0.96,
+      },
+    });
+  }
+
+  if (!map.getLayer("future-city-signature-towers")) {
+    if (typeof window.createFutureCityLayer !== "function") {
+      throw new Error("The bundled Three.js future-city tower layer did not load.");
+    }
+    futureCity3DLayer = window.createFutureCityLayer({ minimumZoom: 11.5 });
+    map.addLayer(futureCity3DLayer, "charging-stations-layer");
+  }
+  futureCity3DLayer?.setVisible(true);
+  futureCity3DLayer?.setTowers(
+    futureCityScenario.features.filter(
+      (feature) => feature.properties?.feature_type === "future-tower"
+    )
+  );
+}
+
+function showFutureCityFeaturePopup(event) {
+  const feature = event.features?.[0];
+  if (!feature) return;
+  const properties = feature.properties || {};
+  const featureType = properties.feature_type;
+  if (featureType !== "future-building" && featureType !== "existing-building") return;
+  event.preventDefault();
+  const title = featureType === "future-building"
+    ? "Proposed synthetic building"
+    : "Mapped existing building";
+  const rows = [
+    properties.district_name ? `District: ${properties.district_name}` : null,
+    properties.building_type ? `Type: ${String(properties.building_type).replaceAll("_", " ")}` : null,
+    Number.isFinite(Number(properties.height_m)) ? `Height: ${Number(properties.height_m)} m` : null,
+    properties.scenario_year ? `${properties.scenario_year} scenario` : null,
+    properties.generation_seed !== undefined ? `Seed: ${properties.generation_seed}` : null,
+    properties.osm_id ? `OpenStreetMap way ${properties.osm_id}` : null,
+  ].filter(Boolean);
+  openMapPopup(
+    event.lngLat.lng,
+    event.lngLat.lat,
+    `<strong>${escapeHtml(title)}</strong><br>${rows.map(escapeHtml).join("<br>")}`,
+    "future-city-feature-popup"
+  );
+}
+
 function addChargingStationClusterLayers() {
   if (!map.getLayer("charging-stations-clusters")) {
     map.addLayer({
@@ -490,13 +663,14 @@ function installApplicationMapLayers() {
   addGeoJSONSource("active-route-source", activeTrailLiveFeature);
   addGeoJSONSource("unmitigated-route-source", unmitigatedPolyline?.geojson || emptyFeatureCollection());
   addGeoJSONSource("charging-stations-source", { type: "FeatureCollection", features: stationFeatures });
+  addGeoJSONSource(FUTURE_CITY_SOURCE_ID, futureCityScenario);
   Object.entries(MAP_POINT_SOURCES).forEach(([kind, sourceId]) => {
     addGeoJSONSource(sourceId, {
       type: "FeatureCollection",
       features: Array.from(mapPointGroups[kind].values()),
     });
-    syncTerrainToStyle();
   });
+  syncTerrainToStyle();
 
   if (!map.getLayer("route-layer")) {
     map.addLayer({
@@ -557,6 +731,7 @@ function installApplicationMapLayers() {
   addPointLayers("user-location-source", "user-location");
   addPointLayers("focused-station-source", "focused-station");
   addPointLayers("unmitigated-stops-source", "unmitigated-stops");
+  installFutureCityMapLayers();
 
   if (!map.getLayer("ev-charging-station-3d-layer")) {
     if (typeof window.createChargingStationLayer !== "function") {
@@ -612,6 +787,7 @@ async function initMap() {
     if (terrainToggle) terrainToggle.disabled = false;
     map.on("click", onMapClick);
     map.on("click", "charging-stations-layer", (event) => showMapFeaturePopup(event, "station-plot-popup"));
+    map.on("click", FUTURE_CITY_LAYER_IDS.futureBuildingPick, showFutureCityFeaturePopup);
     map.on("click", "charging-stations-clusters", (event) => {
       const feature = event.features?.[0];
       const clusterId = feature?.properties?.cluster_id;
@@ -646,6 +822,10 @@ async function initMap() {
     });
     mapStatusElement.textContent = "Map: Mapbox GL JS";
     initMapStationsBar();
+    loadFutureCityScenario("vita", 2050).catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error("[FutureCity] Scenario load failed:", message);
+    });
     initGeolocation();
     resolveMapReady(map);
     plotAllChargingStations({ fitBounds: false, filter: "all" });
@@ -867,6 +1047,34 @@ async function plotAllChargingStations(options = { fitBounds: false, filter: "al
   } catch (err) {
     console.error("[App] Failed to plot all charging stations:", err);
   }
+}
+
+function setFutureCityScenarioData(scenario) {
+  futureCityScenario = scenario;
+  const source = map?.getSource(FUTURE_CITY_SOURCE_ID);
+  if (source && map?.isStyleLoaded()) {
+    source.setData(scenario);
+  }
+  futureCity3DLayer?.setTowers(
+    scenario.features.filter(
+      (feature) => feature.properties?.feature_type === "future-tower"
+    )
+  );
+}
+
+async function loadFutureCityScenario(cityId, seed) {
+  const requestId = ++futureCityRequestId;
+  const response = await fetch(
+    `${API_BASE}/api/future-cities/${encodeURIComponent(cityId)}/scenario?seed=${encodeURIComponent(seed)}`
+  );
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.error || `Future-city request failed with HTTP ${response.status}`);
+  }
+  const scenario = await response.json();
+  if (requestId !== futureCityRequestId) return;
+  setFutureCityScenarioData(scenario);
+  installFutureCityMapLayers();
 }
 
 function initMapStationsBar() {
@@ -1357,6 +1565,13 @@ function populateRouteCard(response) {
   el.dataset.level = getSocState(arrivalSoc);
 
   document.getElementById("result-time").textContent = new Date().toLocaleTimeString();
+
+  const routingSource = response.routing_source || response.route?.routing_source;
+  if (routingSource === "geometric-fallback") {
+    console.warn("[RouteR] Road provider unavailable — geometry fell back to near-straight corridor.");
+  } else if (routingSource) {
+    console.info(`[RouteR] Road geometry source: ${routingSource} (${response.route?.geometry_vertex_count || response.route?.geometry?.length || 0} verts)`);
+  }
 }
 
 // ══════════════════════════════════════════════════
@@ -2289,6 +2504,18 @@ function validateMaximumRangeBenchmark(res) {
   };
 }
 
+function assertRoadFollowingGeometry(res, minVertices = 40) {
+  const geometry = res?.route?.geometry || [];
+  const source = res?.routing_source || res?.route?.routing_source || "";
+  const isRoad = source === "osrm" || source === "osrm-stitched";
+  const verts = geometry.length || res?.route?.geometry_vertex_count || 0;
+  return {
+    ok: isRoad && verts >= minVertices,
+    source: source || "unknown",
+    verts,
+  };
+}
+
 const BENCHMARK_SCENARIOS = [
   {
     id: "local-direct",
@@ -2307,12 +2534,13 @@ const BENCHMARK_SCENARIOS = [
       connectors: ["CCS2", "Type2"]
     },
     validate: (res) => {
-      const pass = res.feasible === true && (!res.charging_stops || res.charging_stops.length === 0) && res.charging_needed === false;
+      const road = assertRoadFollowingGeometry(res, 20);
+      const pass = res.feasible === true && (!res.charging_stops || res.charging_stops.length === 0) && res.charging_needed === false && road.ok;
       return {
         pass,
         message: pass
-          ? `✓ Feasible Direct: ${res.route.total_distance_km} km, Arr: ${(res.arrival_soc * 100).toFixed(0)}% SOC, 0 detours`
-          : `✗ Expected 0 stops, received ${res.charging_stops?.length || 0}`
+          ? `✓ Feasible Direct: ${res.route.total_distance_km} km, Arr: ${(res.arrival_soc * 100).toFixed(0)}% SOC, 0 detours · road ${road.source} (${road.verts} verts)`
+          : `✗ Expected 0 stops on a road-following path, received ${res.charging_stops?.length || 0} stops / ${road.source}`
       };
     }
   },
@@ -2333,14 +2561,15 @@ const BENCHMARK_SCENARIOS = [
       connectors: ["CCS2", "Type2"]
     },
     validate: (res) => {
-      const pass = res.feasible === true && res.charging_needed === true && (res.charging_stops && res.charging_stops.length >= 1) && res.is_detour_routed === true;
+      const road = assertRoadFollowingGeometry(res, 40);
+      const pass = res.feasible === true && res.charging_needed === true && (res.charging_stops && res.charging_stops.length >= 1) && res.is_detour_routed === true && road.ok;
       const extraKm = res.detour_summary?.extra_distance_km ?? 0;
       const st = res.charging_stops ? res.charging_stops[0] : null;
       return {
         pass,
         message: pass
-          ? `✓ Re-routed: +${extraKm} km road detour via ${st ? st.station_name : 'Station'} (${st ? st.power_kw : ''} kW DC)`
-          : `✗ Physical detour not established`
+          ? `✓ Re-routed: +${extraKm} km road detour via ${st ? st.station_name : 'Station'} (${st ? st.power_kw : ''} kW) · ${road.source}`
+          : `✗ Physical road detour not established (routing=${road.source}, verts=${road.verts})`
       };
     }
   },

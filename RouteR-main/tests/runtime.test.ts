@@ -11,6 +11,10 @@ import {
   createArchitecturalTower,
   measureArchitecturalTower,
 } from '../frontend/three/architectural-tower-model.js';
+import {
+  createFutureCityScenario,
+  type FutureCityCollection,
+} from '../backend_core/future_city_scenario.ts';
 
 const projectDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const serverEntry = path.join(projectDirectory, 'server.ts');
@@ -73,6 +77,57 @@ afterAll(async () => {
 });
 
 describe('active Mapbox frontend and API', () => {
+  it('creates deterministic 100 m synthetic towers from buildable city sites', () => {
+    const source: FutureCityCollection = {
+      type: 'FeatureCollection',
+      features: Array.from({ length: 10 }, (_, index) => ({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [74.5 + index * 0.001, 17.3 + index * 0.001],
+        },
+        properties: {
+          feature_type: 'candidate-site',
+          bearing_deg: index * 10,
+          slope_percent: 5,
+          district_id: 'vita-district-1',
+          district_name: 'Central Business District',
+          district_color: '#D9A441',
+        },
+      })),
+      metadata: {
+        city: { id: 'vita', center: { lat: 17.3, lon: 74.5 } },
+        max_generated_buildings: 6,
+        signature_tower_target: 2,
+      },
+    };
+
+    const first = createFutureCityScenario(source, 2050);
+    const replay = createFutureCityScenario(source, 2050);
+    const alternate = createFutureCityScenario(source, 2051);
+    const buildings = first.features.filter(
+      feature => feature.properties.feature_type === 'future-building'
+    );
+    const towers = first.features.filter(
+      feature => feature.properties.feature_type === 'future-tower'
+    );
+
+    expect(first).toEqual(replay);
+    expect(first.features).not.toEqual(alternate.features);
+    expect(buildings).toHaveLength(6);
+    expect(towers).toHaveLength(2);
+    expect(towers.every(tower => (
+      tower.properties.height_m === 100 &&
+      tower.properties.is_synthetic === true &&
+      tower.geometry.type === 'Point'
+    ))).toBe(true);
+    expect(buildings.every(building => (
+      building.properties.is_synthetic === true &&
+      building.properties.scenario_year === 2050 &&
+      building.properties.generation_seed === 2050
+    ))).toBe(true);
+  });
+
   it('builds an original, detailed 400 m radial tower with a landscaped site', () => {
     const fullDetail = createArchitecturalTower({ detail: 'full' });
     const simplified = createArchitecturalTower({ detail: 'simplified' });
@@ -125,6 +180,8 @@ describe('active Mapbox frontend and API', () => {
     expect(page).toContain('/static/charging-station-runtime.js');
     expect(page).toContain('btn-toggle-architectural-layer');
     expect(page).toContain('btn-toggle-terrain');
+    expect(page).toContain('future-city-select');
+    expect(page).toContain('future-city-regenerate');
 
     const scriptResponse = await fetch(`${baseUrl}/static/app.js`);
     expect(scriptResponse.status).toBe(200);
@@ -138,12 +195,16 @@ describe('active Mapbox frontend and API', () => {
     expect(script).toContain('mapbox.mapbox-terrain-dem-v1');
     expect(script).toContain('map.setTerrain({ source: TERRAIN_SOURCE_ID, exaggeration: 1.15 })');
     expect(script).toContain('route-terrain-hillshade');
+    expect(script).toContain('future-city-signature-towers');
+    expect(script).toContain('future-city-proposed-buildings');
 
     const runtimeResponse = await fetch(`${baseUrl}/static/charging-station-runtime.js`);
     expect(runtimeResponse.status).toBe(200);
     const runtime = await runtimeResponse.text();
     expect(runtime).toContain('ev-charging-station-3d-layer');
+    expect(runtime).toContain('future-city-signature-towers');
     expect(runtime).toContain('400');
+    expect(runtime).toContain('100');
 
     const styleResponse = await fetch(`${baseUrl}/static/charging-station-runtime.css`);
     expect(styleResponse.status).toBe(200);
@@ -161,6 +222,95 @@ describe('active Mapbox frontend and API', () => {
     expect(response.status).toBe(200);
     const config = await response.json() as { mapboxPublicToken: string };
     expect(typeof config.mapboxPublicToken).toBe('string');
+  });
+
+  it('serves OSM-attributed future-city catalog and provisional boundaries', async () => {
+    const catalogResponse = await fetch(`${baseUrl}/data/future-cities/catalog.json`);
+    expect(catalogResponse.status).toBe(200);
+    const catalog = await catalogResponse.json() as {
+      osm_attribution: string;
+      official_boundaries: boolean;
+      cities: Array<{ id: string; center: { lat: number; lon: number } }>;
+    };
+    expect(catalog.osm_attribution).toContain('OpenStreetMap contributors');
+    expect(catalog.official_boundaries).toBe(false);
+    expect(catalog.cities.map(city => city.id)).toEqual([
+      'vita',
+      'nevari',
+      'tasgaon',
+      'chinchani-ambak',
+    ]);
+
+    for (const city of catalog.cities) {
+      const response = await fetch(
+        `${baseUrl}/data/future-cities/boundaries/${city.id}.geojson`
+      );
+      expect(response.status).toBe(200);
+      const boundary = await response.json() as {
+        metadata: { official_boundary: boolean; osm_license: string };
+        features: Array<{
+          geometry: { type: string; coordinates: unknown };
+          properties: { feature_type?: string; official_boundary?: boolean };
+        }>;
+      };
+      expect(boundary.metadata.official_boundary).toBe(false);
+      expect(boundary.metadata.osm_license).toContain('ODbL');
+      const anchor = boundary.features.find(
+        feature => feature.properties.feature_type === 'city-anchor'
+      );
+      expect(anchor?.geometry.type).toBe('Point');
+      expect(anchor?.geometry.coordinates).toEqual([city.center.lon, city.center.lat]);
+    }
+  });
+
+  it('serves seeded city scenarios without altering the EV charger inventory', async () => {
+    const initialInventoryResponse = await fetch(`${baseUrl}/api/stations/status`);
+    const initialInventory = await initialInventoryResponse.json() as {
+      total_stations: number;
+    };
+    const response = await fetch(`${baseUrl}/api/future-cities/vita/scenario?seed=2050`);
+    expect(response.status).toBe(200);
+    const scenario = await response.json() as {
+      metadata: {
+        active_generation_seed: number;
+        active_signature_towers: number;
+        city: { featureCounts: { candidateSites: number; observedBuildingsWithin1Km: number } };
+      };
+      features: Array<{
+        geometry: { type: string; coordinates: unknown };
+        properties: Record<string, unknown>;
+      }>;
+    };
+    expect(scenario.metadata.active_generation_seed).toBe(2050);
+    expect(scenario.metadata.city.featureCounts.candidateSites).toBeGreaterThan(0);
+    expect(scenario.metadata.city.featureCounts.observedBuildingsWithin1Km).toBeGreaterThan(0);
+    expect(scenario.metadata.active_signature_towers).toBeGreaterThan(0);
+    expect(scenario.features.filter(
+      feature => feature.properties.feature_type === 'future-building'
+    ).every(feature => feature.properties.is_synthetic === true)).toBe(true);
+    expect(scenario.features.filter(
+      feature => feature.properties.feature_type === 'future-tower'
+    ).every(feature => (
+      feature.properties.height_m === 100 &&
+      feature.geometry.type === 'Point'
+    ))).toBe(true);
+
+    const replayResponse = await fetch(`${baseUrl}/api/future-cities/vita/scenario?seed=2050`);
+    const replay = await replayResponse.json() as typeof scenario;
+    expect(replay.features).toEqual(scenario.features);
+
+    const alternateResponse = await fetch(`${baseUrl}/api/future-cities/vita/scenario?seed=2051`);
+    const alternate = await alternateResponse.json() as typeof scenario;
+    expect(alternate.features).not.toEqual(scenario.features);
+
+    const invalidSeedResponse = await fetch(`${baseUrl}/api/future-cities/vita/scenario?seed=-1`);
+    expect(invalidSeedResponse.status).toBe(400);
+    const missingCityResponse = await fetch(`${baseUrl}/api/future-cities/unknown/scenario`);
+    expect(missingCityResponse.status).toBe(404);
+
+    const finalInventoryResponse = await fetch(`${baseUrl}/api/stations/status`);
+    const finalInventory = await finalInventoryResponse.json() as typeof initialInventory;
+    expect(finalInventory.total_stations).toBe(initialInventory.total_stations);
   });
 
   it('returns the station inventory consumed by the map', async () => {
@@ -200,7 +350,7 @@ describe('active Mapbox frontend and API', () => {
       const mergedCsvStations = inventory.stations.filter(
         station => station.data_source === 'EV_Charging_Stations_India_unique.csv'
       );
-      expect(mergedCsvStations).toHaveLength(8);
+      expect(mergedCsvStations.length).toBeGreaterThan(8);
       expect(mergedCsvStations.every(station =>
         station.lat >= 6 &&
         station.lat <= 38 &&
@@ -209,8 +359,21 @@ describe('active Mapbox frontend and API', () => {
         Number(station.power_kw) > 0 &&
         station.is_public === true &&
         Array.isArray(station.connector_types) &&
-        station.connector_types.length > 0
+        station.connector_types.length > 0 &&
+        [40, 80, 160].includes(Number(station.power_kw))
       )).toBe(true);
+
+      const capacityBuckets = inventory.stations.reduce(
+        (acc, station) => {
+          const power = Number(station.power_kw);
+          if (power === 40 || power === 80 || power === 160) acc[power] += 1;
+          return acc;
+        },
+        { 40: 0, 80: 0, 160: 0 } as Record<40 | 80 | 160, number>
+      );
+      expect(capacityBuckets[40]).toBeGreaterThan(5_000);
+      expect(capacityBuckets[80]).toBeGreaterThan(5_000);
+      expect(capacityBuckets[160]).toBeGreaterThan(2_000);
     });
 
     it('uses the maximum five distinct, geographically progressive stops on the longest benchmark route', async () => {

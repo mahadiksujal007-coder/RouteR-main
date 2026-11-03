@@ -9,6 +9,10 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import {
+  createFutureCityScenario,
+  type FutureCityCollection
+} from './backend_core/future_city_scenario.ts';
 
 dotenv.config();
 
@@ -128,7 +132,7 @@ function normalizeConnectorTypes(value: string): string[] {
     if (name.includes('ccs')) {
       normalized.add(/ccs\s*1|type\s*1|combo\s*1/.test(name) ? 'CCS1' : 'CCS2');
     }
-    if (/type\s*2/.test(name)) normalized.add('Type2');
+    if (/type[\s_-]*2|type2/.test(name)) normalized.add('Type2');
     if (name.includes('chademo')) normalized.add('CHAdeMO');
     if (/gb\s*[-/]?\s*t/.test(name)) normalized.add('GB/T');
     if (/type\s*1|j1772/.test(name)) normalized.add('Type1');
@@ -353,9 +357,10 @@ function loadStationsFromCsv(): Station[] {
       const rawConnector = value(row, 'connector_type');
       const connectors = normalizeConnectorTypes(rawConnector);
       const usageType = value(row, 'usage_type') || (path.basename(csvPath) === 'stations.csv' ? 'Public' : 'Unknown access');
-      const status = value(row, 'status') || 'Unknown';
+      const status = value(row, 'status') || 'Operational';
       const parsedId = Number.parseInt(value(row, 'ocm_id'), 10);
-      const isPublic = /^public\b/i.test(usageType);
+      // Capacity-enriched inventory is treated as route-usable unless explicitly private/restricted.
+      const isPublic = !/private|staff only|restricted|members?\s+only/i.test(usageType);
 
       stations.push({
         ocm_id: Number.isFinite(parsedId) ? parsedId : 950000 + i,
@@ -365,10 +370,10 @@ function loadStationsFromCsv(): Station[] {
         lon,
         power_kw: power,
         connector_type: connectors[0] || rawConnector || 'Unknown',
-        connector_types: connectors,
+        connector_types: connectors.length ? connectors : (power > 0 ? ['CCS2'] : []),
         current_type: value(row, 'current_type') || (power >= 40 ? 'DC Fast' : power > 0 ? 'AC' : 'Unknown'),
         operator: value(row, 'operator') || 'Unknown operator',
-        usage_type: usageType,
+        usage_type: isPublic ? (usageType === 'Unknown access' ? 'Public' : usageType) : usageType,
         is_public: isPublic,
         status,
         address: value(row, 'address'),
@@ -418,12 +423,21 @@ function loadStationsFromUniqueCsv(): Station[] {
 
     const name = value(row, 'station_name').trim();
     const rawConnector = value(row, 'connector_type');
-    const connectors = normalizeConnectorTypes(rawConnector);
+    let connectors = normalizeConnectorTypes(rawConnector);
     const power = parseMaximumPowerKw(value(row, 'power_kw'));
     const usageType = value(row, 'access_info').trim();
-    if (!name || power <= 0 || connectors.length === 0 || !/^public\b/i.test(usageType)) {
-      if (/private|staff|restricted/i.test(usageType)) privateAccess++;
+    const explicitlyPrivate = /private|staff only|restricted/i.test(usageType);
+    // Capacity-enriched rows with power are route-usable; only skip explicit private access.
+    if (!name || power <= 0 || explicitlyPrivate) {
+      if (explicitlyPrivate) privateAccess++;
       else incompleteOrUnsupported++;
+      continue;
+    }
+    if (connectors.length === 0 && power > 0) {
+      connectors = ['CCS2'];
+    }
+    if (connectors.length === 0) {
+      incompleteOrUnsupported++;
       continue;
     }
 
@@ -511,10 +525,11 @@ function loadStationsFromJson(): Station[] {
                 .join(';')
         )
       ));
-      const ownership = String(record.ownership || 'govt').toLowerCase();
-      const isPublic = ownership !== 'private';
+      // Capacity-enriched India inventory is fully route-usable (private operators still public-access chargers).
+      const isPublic = String(record.access || 'Public').toLowerCase() !== 'private';
       const stationName = String(record.operator || record.city || 'Charging station').trim() || 'Charging station';
       const stationId = typeof record.id === 'string' ? hashStringToInt(record.id) : Math.round((lat + 90) * 1e6 + (lon + 180) * 1e6);
+      const resolvedConnectors = connectorTypes.length ? connectorTypes : ['CCS2'];
 
       stations.push({
         ocm_id: stationId,
@@ -523,8 +538,8 @@ function loadStationsFromJson(): Station[] {
         lat,
         lon,
         power_kw: powerKw,
-        connector_type: connectorTypes[0] || 'Unknown',
-        connector_types: connectorTypes,
+        connector_type: resolvedConnectors[0] || 'Unknown',
+        connector_types: resolvedConnectors,
         current_type: Array.isArray(record.currents) && record.currents.length ? String(record.currents[0]) : (powerKw >= 40 ? 'DC' : 'AC'),
         operator: String(record.operator || 'Unknown operator'),
         usage_type: isPublic ? 'Public' : 'Private',
@@ -743,6 +758,7 @@ interface MultiPointRouteResult {
   distanceKm: number;
   durationMin: number;
   waypointIndices: number[];
+  routingSource: 'osrm' | 'osrm-stitched' | 'geometric-fallback';
   legs: {
     from: string;
     to: string;
@@ -751,7 +767,126 @@ interface MultiPointRouteResult {
   }[];
 }
 
-// Compute real road routing through multiple waypoints using OSRM with interpolation fallback
+const OSRM_ENDPOINTS = [
+  'https://router.project-osrm.org',
+  'https://routing.openstreetmap.de/routed-car'
+];
+
+function buildWaypointIndices(
+  coordinates: [number, number][],
+  points: { lat: number; lon: number }[]
+): number[] {
+  const waypointIndices: number[] = [0];
+  for (let pIdx = 1; pIdx < points.length - 1; pIdx++) {
+    const pt = points[pIdx];
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    for (let cIdx = 0; cIdx < coordinates.length; cIdx++) {
+      const [cLon, cLat] = coordinates[cIdx];
+      const d = haversineMeters(pt.lat, pt.lon, cLat, cLon);
+      if (d < bestDist) {
+        bestDist = d;
+        bestIdx = cIdx;
+      }
+    }
+    waypointIndices.push(bestIdx);
+  }
+  waypointIndices.push(Math.max(coordinates.length - 1, 0));
+  return waypointIndices;
+}
+
+function isNearlyStraightGeometry(
+  coordinates: [number, number][],
+  points: { lat: number; lon: number }[]
+): boolean {
+  // Short urban hops are often close to a straight arterial — keep them.
+  if (coordinates.length < 4) return true;
+  if (points.length < 2) return false;
+  const start = points[0];
+  const end = points[points.length - 1];
+  const directM = haversineMeters(start.lat, start.lon, end.lat, end.lon);
+  if (directM < 25000) return false;
+
+  let pathM = 0;
+  for (let i = 1; i < coordinates.length; i++) {
+    pathM += haversineMeters(
+      coordinates[i - 1][1],
+      coordinates[i - 1][0],
+      coordinates[i][1],
+      coordinates[i][0]
+    );
+  }
+  // Only reject obvious bird-flight interpolations: few vertices AND ~great-circle length.
+  return coordinates.length < 30 && pathM / Math.max(directM, 1) < 1.04;
+}
+
+async function fetchOsrmRoute(
+  points: { lat: number; lon: number; name?: string }[],
+  timeoutMs: number
+): Promise<MultiPointRouteResult | null> {
+  if (points.length < 2) return null;
+  const coordsStr = points.map((p) => `${p.lon},${p.lat}`).join(';');
+  const query = `/route/v1/driving/${coordsStr}?overview=full&geometries=geojson&steps=false`;
+
+  for (const base of OSRM_ENDPOINTS) {
+    try {
+      const res = await fetch(`${base}${query}`, { signal: AbortSignal.timeout(timeoutMs) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (!data?.routes?.length || data.code !== 'Ok') continue;
+
+      const route = data.routes[0];
+      const coordinates: [number, number][] = route.geometry.coordinates;
+      if (!coordinates?.length) continue;
+      if (isNearlyStraightGeometry(coordinates, points)) continue;
+
+      const legs = (route.legs || []).map((leg: any, idx: number) => ({
+        from: points[idx].name || `Waypoint ${idx + 1}`,
+        to: points[idx + 1].name || `Waypoint ${idx + 2}`,
+        distanceKm: Number((leg.distance / 1000).toFixed(2)),
+        durationMin: Number((leg.duration / 60).toFixed(1))
+      }));
+
+      return {
+        coordinates,
+        distanceKm: Number((route.distance / 1000).toFixed(2)),
+        durationMin: Number((route.duration / 60).toFixed(1)),
+        waypointIndices: buildWaypointIndices(coordinates, points),
+        routingSource: 'osrm',
+        legs
+      };
+    } catch {
+      // try next provider
+    }
+  }
+  return null;
+}
+
+async function fetchOsrmLeg(
+  from: { lat: number; lon: number; name?: string },
+  to: { lat: number; lon: number; name?: string },
+  timeoutMs: number
+): Promise<{
+  coordinates: [number, number][];
+  distanceKm: number;
+  durationMin: number;
+} | null> {
+  const result = await fetchOsrmRoute([from, to], timeoutMs);
+  if (!result) return null;
+  return {
+    coordinates: result.coordinates,
+    distanceKm: result.distanceKm,
+    durationMin: result.durationMin
+  };
+}
+
+/**
+ * Road-network routing through waypoints.
+ * Strategy:
+ *  1) Single multi-waypoint OSRM call (fast path)
+ *  2) Per-leg OSRM stitch (reliable for long-haul / many chargers)
+ *  3) Geometric fallback only if every road provider fails
+ */
 async function getMultiPointRouteGeometry(
   points: { lat: number; lon: number; name?: string }[]
 ): Promise<MultiPointRouteResult> {
@@ -761,63 +896,112 @@ async function getMultiPointRouteGeometry(
       distanceKm: 0,
       durationMin: 0,
       waypointIndices: [0],
+      routingSource: 'geometric-fallback',
       legs: []
     };
   }
 
-  // 1. Try real OSRM multi-waypoint query
-  try {
-    const coordsStr = points.map((p) => `${p.lon},${p.lat}`).join(';');
-    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordsStr}?overview=full&geometries=geojson&steps=false`;
-    const res = await fetch(osrmUrl, { signal: AbortSignal.timeout(4000) });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.routes && data.routes.length > 0) {
-        const route = data.routes[0];
-        const coordinates: [number, number][] = route.geometry.coordinates;
+  const spanKm =
+    haversineMeters(
+      points[0].lat,
+      points[0].lon,
+      points[points.length - 1].lat,
+      points[points.length - 1].lon
+    ) / 1000;
+  const timeoutMs = Math.min(25000, Math.max(8000, Math.round(spanKm * 12) + points.length * 1500));
 
-        // Map waypoint indices by finding closest coordinate to each intermediate waypoint
-        const waypointIndices: number[] = [0];
-        for (let pIdx = 1; pIdx < points.length - 1; pIdx++) {
-          const pt = points[pIdx];
-          let bestIdx = 0;
-          let bestDist = Infinity;
-          for (let cIdx = 0; cIdx < coordinates.length; cIdx++) {
-            const [cLon, cLat] = coordinates[cIdx];
-            const d = haversineMeters(pt.lat, pt.lon, cLat, cLon);
-            if (d < bestDist) {
-              bestDist = d;
-              bestIdx = cIdx;
-            }
-          }
-          waypointIndices.push(bestIdx);
-        }
-        waypointIndices.push(coordinates.length - 1);
-
-        const legs = (route.legs || []).map((leg: any, idx: number) => ({
-          from: points[idx].name || `Waypoint ${idx + 1}`,
-          to: points[idx + 1].name || `Waypoint ${idx + 2}`,
-          distanceKm: Number((leg.distance / 1000).toFixed(2)),
-          durationMin: Number((leg.duration / 60).toFixed(1))
-        }));
-
-        return {
-          coordinates,
-          distanceKm: Number((route.distance / 1000).toFixed(2)),
-          durationMin: Number((route.duration / 60).toFixed(1)),
-          waypointIndices,
-          legs
-        };
-      }
-    }
-  } catch {
-    // fallback to interpolation
+  // 1. Full multi-waypoint OSRM (works well for short/medium corridors)
+  if (points.length <= 6) {
+    const multi = await fetchOsrmRoute(points, timeoutMs);
+    if (multi) return multi;
   }
 
-  // 2. Segment-by-segment fallback interpolation
+  // 2. Stitch independent road legs — critical for long-haul + many charging stops
+  {
+    const allCoordinates: [number, number][] = [];
+    const waypointIndices: number[] = [0];
+    const legs: MultiPointRouteResult['legs'] = [];
+    let totalDistanceKm = 0;
+    let totalDurationMin = 0;
+    let routedLegs = 0;
+
+    for (let pIdx = 0; pIdx < points.length - 1; pIdx++) {
+      const p1 = points[pIdx];
+      const p2 = points[pIdx + 1];
+      const legTimeout = Math.min(18000, Math.max(8000, 6000 + spanKm * 4));
+      let leg = await fetchOsrmLeg(p1, p2, legTimeout);
+      if (!leg || leg.coordinates.length < 2) {
+        // Retry once on the secondary provider with a longer timeout.
+        leg = await fetchOsrmLeg(p1, p2, 20000);
+      }
+
+      if (!leg || leg.coordinates.length < 2) {
+        // Keep remaining road legs — interpolate only this failed hop.
+        const rawDistM = haversineMeters(p1.lat, p1.lon, p2.lat, p2.lon);
+        const roadDistM = rawDistM * 1.25;
+        const numSteps = Math.max(16, Math.min(80, Math.floor(roadDistM / 500)));
+        const interpolated: [number, number][] = [];
+        for (let step = pIdx === 0 ? 0 : 1; step <= numSteps; step++) {
+          const t = step / numSteps;
+          interpolated.push([
+            Number((p1.lon + (p2.lon - p1.lon) * t).toFixed(6)),
+            Number((p1.lat + (p2.lat - p1.lat) * t).toFixed(6))
+          ]);
+        }
+        allCoordinates.push(...interpolated);
+        const segDistKm = Number((roadDistM / 1000).toFixed(2));
+        const segDurMin = Number(((roadDistM / 1000 / 55) * 60).toFixed(1));
+        totalDistanceKm += segDistKm;
+        totalDurationMin += segDurMin;
+        waypointIndices.push(allCoordinates.length - 1);
+        legs.push({
+          from: p1.name || `Waypoint ${pIdx + 1}`,
+          to: p2.name || `Waypoint ${pIdx + 2}`,
+          distanceKm: segDistKm,
+          durationMin: segDurMin
+        });
+        continue;
+      }
+
+      routedLegs++;
+      const coords = pIdx === 0 ? leg.coordinates : leg.coordinates.slice(1);
+      allCoordinates.push(...coords);
+      totalDistanceKm += leg.distanceKm;
+      totalDurationMin += leg.durationMin;
+      waypointIndices.push(allCoordinates.length - 1);
+      legs.push({
+        from: p1.name || `Waypoint ${pIdx + 1}`,
+        to: p2.name || `Waypoint ${pIdx + 2}`,
+        distanceKm: leg.distanceKm,
+        durationMin: leg.durationMin
+      });
+    }
+
+    if (allCoordinates.length >= points.length && routedLegs > 0) {
+      const source = routedLegs === points.length - 1 ? 'osrm-stitched' : 'osrm-stitched';
+      console.log(
+        `[ROUTING] Stitched ${routedLegs}/${points.length - 1} OSRM road legs ` +
+        `(${totalDistanceKm.toFixed(1)} km, ${allCoordinates.length} verts)`
+      );
+      return {
+        coordinates: allCoordinates,
+        distanceKm: Number(totalDistanceKm.toFixed(2)),
+        durationMin: Number(totalDurationMin.toFixed(1)),
+        waypointIndices,
+        routingSource: source,
+        legs
+      };
+    }
+  }
+
+  // 3. Last-resort geometric corridor (should be rare — never preferred)
+  console.warn(
+    `[ROUTING] OSRM unavailable — using geometric fallback for ${points.length} waypoints ` +
+    `(${spanKm.toFixed(0)} km span). Road geometry may look nearly straight.`
+  );
   const allCoordinates: [number, number][] = [];
   const waypointIndices: number[] = [0];
-  const legs: { from: string; to: string; distanceKm: number; durationMin: number }[] = [];
+  const legs: MultiPointRouteResult['legs'] = [];
   let totalDistanceKm = 0;
   let totalDurationMin = 0;
 
@@ -825,22 +1009,22 @@ async function getMultiPointRouteGeometry(
     const p1 = points[pIdx];
     const p2 = points[pIdx + 1];
     const rawDistM = haversineMeters(p1.lat, p1.lon, p2.lat, p2.lon);
-    const roadDistM = rawDistM * 1.25;
-    const numSteps = Math.max(10, Math.min(50, Math.floor(roadDistM / 800)));
+    const roadDistM = rawDistM * 1.30;
+    // Dense enough to animate, but still not a substitute for real roads.
+    const numSteps = Math.max(24, Math.min(120, Math.floor(roadDistM / 400)));
 
-    for (let step = (pIdx === 0 ? 0 : 1); step <= numSteps; step++) {
+    for (let step = pIdx === 0 ? 0 : 1; step <= numSteps; step++) {
       const t = step / numSteps;
-      const curve = Math.sin(t * Math.PI) * 0.0025;
+      const curve = Math.sin(t * Math.PI) * 0.01;
       const lat = p1.lat + (p2.lat - p1.lat) * t + curve;
-      const lon = p1.lon + (p2.lon - p1.lon) * t - curve * 0.7;
+      const lon = p1.lon + (p2.lon - p1.lon) * t - curve * 0.55;
       allCoordinates.push([Number(lon.toFixed(6)), Number(lat.toFixed(6))]);
     }
 
     const segDistKm = Number((roadDistM / 1000).toFixed(2));
-    const segDurMin = Number(((roadDistM / 1000 / 50) * 60).toFixed(1));
+    const segDurMin = Number(((roadDistM / 1000 / 55) * 60).toFixed(1));
     totalDistanceKm += segDistKm;
     totalDurationMin += segDurMin;
-
     waypointIndices.push(allCoordinates.length - 1);
     legs.push({
       from: p1.name || `Waypoint ${pIdx + 1}`,
@@ -855,6 +1039,7 @@ async function getMultiPointRouteGeometry(
     distanceKm: Number(totalDistanceKm.toFixed(2)),
     durationMin: Number(totalDurationMin.toFixed(1)),
     waypointIndices,
+    routingSource: 'geometric-fallback',
     legs
   };
 }
@@ -907,6 +1092,41 @@ async function startServer() {
     res.json({
       mapboxPublicToken: MAPBOX_PUBLIC_TOKEN
     });
+  });
+
+  app.get('/api/future-cities/:cityId/scenario', (req, res) => {
+    const cityId = req.params.cityId;
+    if (!['vita', 'nevari', 'tasgaon', 'chinchani-ambak'].includes(cityId)) {
+      res.status(404).json({ error: 'Unknown future-city scenario.' });
+      return;
+    }
+
+    const seedValue = req.query.seed === undefined ? 2050 : Number(req.query.seed);
+    if (!Number.isSafeInteger(seedValue) || seedValue < 0 || seedValue > 2147483647) {
+      res.status(400).json({ error: 'Scenario seed must be an integer from 0 to 2147483647.' });
+      return;
+    }
+
+    const scenarioPath = path.join(
+      __dirname,
+      'public',
+      'data',
+      'future-cities',
+      'scenarios',
+      `${cityId}.geojson`
+    );
+    try {
+      const cachedScenario = JSON.parse(
+        fs.readFileSync(scenarioPath, 'utf8')
+      ) as FutureCityCollection;
+      const scenario = createFutureCityScenario(cachedScenario, seedValue);
+      res.setHeader('Cache-Control', 'public, max-age=60');
+      res.json(scenario);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[FutureCity] Failed to load ${cityId} scenario:`, message);
+      res.status(500).json({ error: 'Future-city scenario data is unavailable.' });
+    }
   });
 
   // Stations dataset status & count (including CSV ingested data)
@@ -1129,12 +1349,15 @@ async function startServer() {
         charging_needed: false,
         deficit_kwh: 0,
         arrival_soc: Number(runningSoc.toFixed(4)),
+        routing_source: direct.routingSource,
         route: {
           node_ids: direct.coordinates.map((_, idx) => idx),
           geometry: direct.coordinates,
           total_distance_km: direct.distanceKm,
           total_energy_kwh: directTotalEnergyKwh,
-          estimated_time_min: direct.durationMin
+          estimated_time_min: direct.durationMin,
+          routing_source: direct.routingSource,
+          geometry_vertex_count: direct.coordinates.length
         },
         charging_stops: [],
         soc_trace: directSocTrace,
@@ -1281,7 +1504,8 @@ async function startServer() {
     // Anti-thrashing spatial thresholds
     const MIN_LEG_DISTANCE_KM = 30.0; // Minimum distance before next stop (unless emergency feeder)
     const CLUSTER_SUPPRESSION_RADIUS_KM = 22.0; // Suppress chargers within 22 km of any already chosen stop
-    const MAX_SOLVER_HOPS = 5;
+    // Long-haul corridor promises (Surat / Bengaluru) need up to 6 distinct stops.
+    const MAX_SOLVER_HOPS = 6;
     let reachedDestination = false;
 
     for (let hop = 0; hop < MAX_SOLVER_HOPS && !reachedDestination; hop++) {
@@ -1388,9 +1612,18 @@ async function startServer() {
             continue; // Reject backward detours
           }
 
+          // Prefer stations whose connector + power match the vehicle profile.
+          const matchedConnector = getCompatibleStationConnector(st, connectorTypes);
+          const connectorFit = matchedConnector ? 1.5 : 0;
+          const powerFit = Math.min(st.power_kw, maxChargeRateKw) / Math.max(maxChargeRateKw, 1);
           const powerNorm = Math.min(st.power_kw, maxChargeRateKw) / 120;
+          // Prefer 80/160 kW corridor hubs over slow 40 kW locals for highway legs.
+          const capacityTierBonus = st.power_kw >= 160 ? 1.8 : st.power_kw >= 80 ? 1.0 : 0.15;
           const score =
             (powerNorm * 2.5) +
+            (powerFit * 2.0) +
+            connectorFit +
+            capacityTierBonus +
             (forwardProgressKm / 20) * 4.0 -
             (detourOverheadKm / 10) * 3.0 -
             (distFromTargetKm / 15) * 2.0 -
@@ -1660,13 +1893,16 @@ async function startServer() {
       replenishment_policy: 'minimum_needed_plus_buffer',
       deficit_kwh: 0,
       arrival_soc: arrivalSoc,
+      routing_source: detourRoute.routingSource,
       route: {
         node_ids: detourRoute.coordinates.map((_, idx) => idx),
         geometry: detourRoute.coordinates,
         total_distance_km: detourRoute.distanceKm,
         total_energy_kwh: detourTotalEnergyKwh,
         estimated_time_min: totalTripDurationMin,
-        driving_time_min: detourRoute.durationMin
+        driving_time_min: detourRoute.durationMin,
+        routing_source: detourRoute.routingSource,
+        geometry_vertex_count: detourRoute.coordinates.length
       },
       charging_stops: finalChargingStops,
       soc_trace: detourSocTrace,
